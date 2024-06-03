@@ -4,7 +4,7 @@ auto chip8::read(word addr) -> byte {
   return memory[ addr & 0x0fff ];
 }
 
-auto chip8::write(word addr, word data) -> void {
+auto chip8::write(word addr, byte data) -> void {
   memory[ addr & 0x0fff ] = data;
 }
 
@@ -24,21 +24,21 @@ auto chip8::time() -> void {
   while (true) {
     auto begin = std::chrono::system_clock::now();
 
-    if (is_timer_engaged[T]) {
-      registers8[T]--;
+    if (is_T) {
+      T--;
     }
 
-    if (is_timer_engaged[S]) {
-      registers8[S]--;
+    if (is_S) {
+      S--;
     }
 
-    if (registers8[T] == 0x00) {
-      is_timer_engaged[T] = false;
+    if (T == 0x00) {
+      is_T = false;
     }
 
-    if (registers8[S] == 0x00) {
+    if (S == 0x00) {
       beep();
-      is_timer_engaged[S] = false;
+      is_S = false;
     }
 
     std::this_thread::sleep_until(begin + timer_rate);
@@ -48,8 +48,8 @@ auto chip8::time() -> void {
 auto chip8::run() -> void {}
 
 auto chip8::fetch() -> void {
-  opcode = word( read( registers16[PC]++ ) ) << 8;
-  opcode = opcode | read( registers16[PC]++ );
+  opcode = word( read( PC++ ) ) << 8;
+  opcode = opcode | read( PC++ );
 }
 
 auto chip8::execute() -> void {}

@@ -10,6 +10,10 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 include(fetchFmt)
 
+if(BUILD_TESTS)
+  include(fetchGoogletest)
+endif()
+
 include(setup)
 
 if(CLANG_TIDY)
@@ -22,3 +26,7 @@ endif()
 
 add_subdirectory(src)
 
+if(BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
+endif()

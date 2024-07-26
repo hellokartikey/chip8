@@ -1,5 +1,10 @@
 add_library(chip8++)
 
+target_link_libraries(
+  chip8++
+  fmt::fmt
+)
+
 target_sources(
   chip8++
 PRIVATE
@@ -7,6 +12,7 @@ PRIVATE
 INTERFACE
   common.h
   chip8.h
+  instructions.h
 )
 
 add_executable(chip8)

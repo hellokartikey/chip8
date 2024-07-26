@@ -4,13 +4,26 @@
 #include <array>
 #include <cstdint>
 #include <stack>
+#include <utility>
 
 namespace chip8 {
 using byte = std::uint8_t;
 using word = std::uint16_t;
 
-constexpr auto NUM_REGISTERS = 0x10z;
-using registers = std::array<byte, NUM_REGISTERS>;
+constexpr auto operator""_w(unsigned long long int value) -> word {
+  return static_cast<word>(value);
+}
+
+constexpr auto operator""_b(unsigned long long int value) -> byte {
+  return static_cast<byte>(value);
+}
+
+constexpr auto address(word addr) -> word {
+  return static_cast<word>(addr & 0x0fff);
+}
+
+using registers = std::array<byte, 0x10>;
+
 enum class regs : byte {
   V0 = 0x00,
   V1 = 0x01,
@@ -29,6 +42,10 @@ enum class regs : byte {
   VE = 0x0e,
   VF = 0x0f
 };
+
+constexpr auto from_reg(regs reg) { return std::to_underlying(reg); }
+
+constexpr auto to_reg(byte reg) { return static_cast<regs>(reg & 0x000f); }
 
 constexpr auto MEMORY_SIZE = 0x1000z;
 using memory = std::array<byte, MEMORY_SIZE>;

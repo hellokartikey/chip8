@@ -24,7 +24,6 @@ TEST_F(RegisterAPI, DefaultInitialization) {
 }
 
 TEST_F(RegisterAPI, GetMethod) {
-  // NOLINTBEGIN(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
   emulator.get(chip8::regs::V0) = 0x01;
   emulator.get(chip8::regs::V1) = 0x12;
   emulator.get(chip8::regs::V2) = 0x23;
@@ -41,7 +40,6 @@ TEST_F(RegisterAPI, GetMethod) {
   emulator.get(chip8::regs::VD) = 0xde;
   emulator.get(chip8::regs::VE) = 0xef;
   emulator.get(chip8::regs::VF) = 0xf0;
-  // NOLINTEND(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
   EXPECT_EQ(emulator.get(chip8::regs::V0), 0x01);
   EXPECT_EQ(emulator.get(chip8::regs::V1), 0x12);

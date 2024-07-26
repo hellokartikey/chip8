@@ -7,11 +7,29 @@ auto chip8::get(regs reg) -> byte& {
   return m_registers.at(std::to_underlying(reg));
 }
 
-auto chip8::read(word addr) const -> byte { return m_memory.at(addr); }
+auto chip8::dump_memory() -> memory& { return m_memory; }
 
-auto chip8::write(word addr, byte data) -> void { m_memory.at(addr) = data; }
+auto chip8::read(word addr) const -> byte {
+  if (addr >= MEMORY_SIZE) {
+    return 0x00;
+  }
+
+  return m_memory.at(addr);
+}
+
+auto chip8::write(word addr, byte data) -> void {
+  if (addr >= MEMORY_SIZE) {
+    return;
+  }
+
+  m_memory.at(addr) = data;
+}
 
 auto chip8::read16(word addr) const -> word {
+  if (addr > MEMORY_SIZE) {
+    return 0x00;
+  }
+
   constexpr auto SHIFT_RIGHT = word{8};
 
   auto upper = static_cast<word>(read(addr) << SHIFT_RIGHT);
@@ -21,6 +39,10 @@ auto chip8::read16(word addr) const -> word {
 }
 
 auto chip8::write16(word addr, word data) -> void {
+  if (addr >= MEMORY_SIZE) {
+    return;
+  }
+
   constexpr auto SHIFT_LEFT = word{8};
   constexpr auto FLAG = word{0x00ff};
 

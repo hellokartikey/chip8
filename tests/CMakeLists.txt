@@ -4,7 +4,8 @@ target_sources(
   test_chip8
 PRIVATE
   fixture.h
-  register_api.cpp
+  registerapi.cpp
+  memoryapi.cpp
 )
 
 target_include_directories(

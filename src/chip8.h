@@ -10,6 +10,8 @@ class chip8 {
   auto get(regs reg) -> byte&;
 
   // Memory API
+  auto dump_memory() -> memory&;
+
   [[nodiscard]] auto read(word addr) const -> byte;
   auto write(word addr, byte data) -> void;
 

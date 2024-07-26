@@ -1,7 +1,11 @@
 #include <fmt/core.h>
 
-int main() {
-  fmt::print("Hello, world!\n");
+#include "chip8.h"
+
+auto main() -> int {
+  fmt::print("chip8 emulator by hellokartikey!\n");
+
+  auto interpreter = chip8::chip8{};
+
   return 0;
 }
-

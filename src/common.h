@@ -2,8 +2,8 @@
 #define HK_CHIP8_COMMON_H
 
 #include <array>
+#include <bitset>
 #include <cstdint>
-#include <stack>
 #include <utility>
 
 namespace chip8 {
@@ -50,21 +50,10 @@ constexpr auto to_reg(byte reg) { return static_cast<regs>(reg & 0x000f); }
 constexpr auto MEMORY_SIZE = 0x1000z;
 using memory = std::array<byte, MEMORY_SIZE>;
 
-constexpr auto STACK_SIZE = 0x10z;
-class stack {
- public:
-  [[nodiscard]] auto top() const -> word { return m_stack.at(m_index - 1); }
-
-  [[nodiscard]] auto empty() const -> bool { return m_index == 0; }
-  [[nodiscard]] auto size() const -> std::size_t { return m_index; }
-
-  auto push(word value) -> void { m_stack.at(m_index++) = value; }
-  auto pop() -> word { return m_stack.at(--m_index); }
-
- private:
-  std::array<word, STACK_SIZE> m_stack{};
-  std::size_t m_index{};
-};
+// Index using (x, y)
+constexpr auto SCREEN_WIDTH = 64Z;
+constexpr auto SCREEN_HEIGHT = 32Z;
+using screen = std::array<std::bitset<SCREEN_HEIGHT>, SCREEN_WIDTH>;
 }  // namespace chip8
 
 #endif

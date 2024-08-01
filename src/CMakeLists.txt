@@ -9,10 +9,13 @@ target_sources(
   chip8++
 PRIVATE
   chip8.cpp
+  parser.cpp
 INTERFACE
   common.h
   chip8.h
   instructions.h
+  parser.h
+  stack.h
 )
 
 add_executable(chip8)

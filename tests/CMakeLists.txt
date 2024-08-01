@@ -6,6 +6,9 @@ PRIVATE
   fixture.h
   registerapi.cpp
   memoryapi.cpp
+  parser.cpp
+  stack.cpp
+  opcode.cpp
 )
 
 target_include_directories(

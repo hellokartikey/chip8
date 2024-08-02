@@ -2,15 +2,15 @@
 #define HK_CHIP8_STACK_H
 
 #include <array>
-#include <initializer_list>
 
 #include "common.h"
 
 namespace chip8 {
 class stack {
- public:
   static constexpr auto STACK_SIZE = 0x10z;
+  using arr = std::array<word, STACK_SIZE>;
 
+ public:
   [[nodiscard]] auto top() const -> word {
     return m_index != 0 ? m_stack.at(m_index - 1) : 0x0000_w;
   }
@@ -33,8 +33,10 @@ class stack {
 
   auto pop() -> word { return m_index != 0 ? m_stack.at(--m_index) : 0x0000_w; }
 
+  [[nodiscard]] auto array() const -> arr { return m_stack; }
+
  private:
-  std::array<word, STACK_SIZE> m_stack{};
+  arr m_stack{};
   std::size_t m_index{};
 };
 }  // namespace chip8

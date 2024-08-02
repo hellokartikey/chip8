@@ -1,6 +1,8 @@
 #include "chip8.h"
 
-#include <fmt/core.h>
+#include <fmt/base.h>
+#include <fmt/ostream.h>
+#include <fmt/ranges.h>
 
 #include <iostream>
 #include <sstream>
@@ -20,7 +22,7 @@ auto chip8::get(regs reg) const -> byte {
 auto chip8::dump_memory() -> memory& { return m_memory; }
 
 auto chip8::print_memory(word begin, word end) const -> void {
-  fmt::print("      ");
+  fmt::print(" hex  ");
 
   for (auto i = byte{}; i < 0x10; i++) {
     fmt::print("{:2x} ", i);
@@ -220,12 +222,58 @@ auto chip8::debug_shell() -> void {
       break;
     } else if (sub_command == "dasm") {
       debug_dasm(cmd);
+    } else if (sub_command == "scr") {
+      debug_scr();
     } else if (sub_command == "help") {
       debug_help(cmd);
+    } else if (sub_command == "si") {
+      debug_step(cmd);
+    } else if (sub_command == "stk") {
+      debug_stk();
+    } else if (sub_command == "push") {
+      debug_push(cmd);
+    } else if (sub_command == "pop") {
+      debug_pop();
+    } else {
+      fmt::print(std::cerr, "Invalid command...\n");
     }
   }
 
   fmt::print("exiting...\n");
+}
+
+auto chip8::debug_push(std::stringstream& cmd) -> void {
+  auto addr = 0x0000_w;
+
+  if (not cmd.eof()) {
+    cmd >> std::hex >> addr;
+  }
+
+  m_stack.push(address(addr));
+}
+
+auto chip8::debug_pop() -> void { fmt::print("{:03x}\n", m_stack.pop()); }
+
+auto chip8::debug_step(std::stringstream& cmd) -> void {
+  std::uint64_t count = 1;
+
+  if (not cmd.eof()) {
+    cmd >> std::dec >> count;
+  }
+
+  exec_n(count);
+}
+
+auto chip8::debug_stk() -> void {
+  if (m_stack.empty()) {
+    fmt::print("|     |\n");
+  }
+
+  for (auto idx = m_stack.size(); idx > 0; idx--) {
+    fmt::print("| {:03x} |\n", m_stack.array().at(idx - 1));
+  }
+
+  fmt::print("+-----+\n");
 }
 
 auto chip8::debug_mem(std::stringstream& cmd) -> void {
@@ -253,15 +301,25 @@ auto chip8::debug_mem(std::stringstream& cmd) -> void {
 auto chip8::debug_help(std::stringstream& cmd) -> void {
   fmt::print(
       "Available commands\n"
-      "\tregs\t\t\tPrint all registers\n"
-      "\tmem [begin] [end]\tPrint memory\n"
-      "\tdasm [begin] [end]\tDisassemble instructions\n"
-      "\texit\t\t\tExit\n"
-      "\thelp\t\t\tPrint this menu\n");
+      "  regs                 Print all registers\n"
+      "  mem [begin] [end]    Print memory\n"
+      "  dasm [begin] [end]   Disassemble instructions\n"
+      "  si [count]           Execute instructions\n"
+      "  stk                  Print the stack\n"
+      "  push [addr]          Push an address to the stack\n"
+      "  pop                  Pop an address from the stack\n"
+      "  scr                  Display screen state in terminal\n"
+      "  exit                 Exit\n"
+      "  help                 Print this menu\n");
 }
 
 auto chip8::debug_dasm(std::stringstream& cmd) -> void {
   auto begin = m_pc;
+
+  if (begin >= 0x0004) {
+    begin -= 0x0004;
+  }
+
   auto end = 0x0000_w;
 
   if (not cmd.eof()) {
@@ -272,7 +330,7 @@ auto chip8::debug_dasm(std::stringstream& cmd) -> void {
     cmd >> std::hex >> end;
   }
 
-  if (begin > end) {
+  if (begin >= end) {
     end = (begin + 0x0010_w);
   }
 
@@ -284,8 +342,30 @@ auto chip8::debug_dasm(std::stringstream& cmd) -> void {
   }
 }
 
+auto chip8::debug_scr() -> void {
+  fmt::print(
+      "+----------------------------------------------------------------+\n");
+
+  for (const auto& row : m_screen) {
+    fmt::print("|");
+
+    for (const auto& pix : row.to_string()) {
+      if (pix == '0') {
+        fmt::print(" ");
+      } else {
+        fmt::print("#");
+      }
+    }
+
+    fmt::print("|\n");
+  }
+
+  fmt::print(
+      "+----------------------------------------------------------------+\n");
+}
+
 auto chip8::sys(word addr) -> void {
-  fmt::print(stderr, "SYS addr not implemented by this emulator\n");
+  fmt::print(std::cerr, "SYS addr not implemented by this emulator\n");
 }
 
 auto chip8::invalid(word opcode) -> void {

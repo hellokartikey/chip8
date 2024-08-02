@@ -23,7 +23,6 @@ class chip8 {
 
  private:
   auto fetch() -> word;
-  [[nodiscard]] auto str_to_reg(const std::string& str) const;
 
  public:
   // Program API
@@ -46,6 +45,7 @@ class chip8 {
   auto ret() -> void;
   auto jp(word addr) -> void;
   auto call(word addr) -> void;
+  auto se(regs reg, byte value) -> void;
 
   auto invalid(word opcode) -> void;
 

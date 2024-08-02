@@ -17,3 +17,15 @@ TEST(Opcode, CALL) {
   EXPECT_EQ(chip8::opcode::CALL(0x1234), 0x2234);
   EXPECT_EQ(chip8::opcode::CALL(0xabcd), 0x2bcd);
 }
+
+TEST(Opcode, SE) {
+  EXPECT_EQ(chip8::opcode::SE(chip8::regs::V0, 0x64), 0x3064);
+  EXPECT_EQ(chip8::opcode::SE(chip8::regs::V1, 0x12), 0x3112);
+  EXPECT_EQ(chip8::opcode::SE(chip8::regs::V4, 0xde), 0x34de);
+  EXPECT_EQ(chip8::opcode::SE(chip8::regs::V6, 0xad), 0x36ad);
+  EXPECT_EQ(chip8::opcode::SE(chip8::regs::V7, 0xff), 0x37ff);
+  EXPECT_EQ(chip8::opcode::SE(chip8::regs::VA, 0x00), 0x3a00);
+  EXPECT_EQ(chip8::opcode::SE(chip8::regs::VB, 0x69), 0x3b69);
+  EXPECT_EQ(chip8::opcode::SE(chip8::regs::VD, 0xbe), 0x3dbe);
+  EXPECT_EQ(chip8::opcode::SE(chip8::regs::VF, 0xef), 0x3fef);
+}

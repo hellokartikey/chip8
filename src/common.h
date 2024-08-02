@@ -50,6 +50,91 @@ constexpr auto from_reg(regs reg) { return std::to_underlying(reg); }
 
 constexpr auto to_reg(byte reg) { return static_cast<regs>(reg & 0x000f); }
 
+constexpr auto str_to_reg(const std::string& str) -> regs {
+  auto reg = regs::INVALID;
+
+  if (str == "V0") {
+    reg = regs::V0;
+  } else if (str == "V1") {
+    reg = regs::V1;
+  } else if (str == "V2") {
+    reg = regs::V2;
+  } else if (str == "V3") {
+    reg = regs::V3;
+  } else if (str == "V4") {
+    reg = regs::V4;
+  } else if (str == "V5") {
+    reg = regs::V5;
+  } else if (str == "V6") {
+    reg = regs::V6;
+  } else if (str == "V7") {
+    reg = regs::V7;
+  } else if (str == "V8") {
+    reg = regs::V8;
+  } else if (str == "V9") {
+    reg = regs::V9;
+  } else if (str == "VA") {
+    reg = regs::VA;
+  } else if (str == "VB") {
+    reg = regs::VB;
+  } else if (str == "VC") {
+    reg = regs::VC;
+  } else if (str == "VD") {
+    reg = regs::VD;
+  } else if (str == "VE") {
+    reg = regs::VE;
+  } else if (str == "VF") {
+    reg = regs::VF;
+  } else if (str == "PC") {
+    reg = regs::PC;
+  }
+
+  return reg;
+}
+
+constexpr auto reg_to_str(regs reg) -> std::string {
+  using namespace std::string_literals;
+
+  switch (reg) {
+    case regs::V0:
+      return "V0"s;
+    case regs::V1:
+      return "V1"s;
+    case regs::V2:
+      return "V2"s;
+    case regs::V3:
+      return "V3"s;
+    case regs::V4:
+      return "V4"s;
+    case regs::V5:
+      return "V5"s;
+    case regs::V6:
+      return "V6"s;
+    case regs::V7:
+      return "V7"s;
+    case regs::V8:
+      return "V8"s;
+    case regs::V9:
+      return "V9"s;
+    case regs::VA:
+      return "VA"s;
+    case regs::VB:
+      return "VB"s;
+    case regs::VC:
+      return "VC"s;
+    case regs::VD:
+      return "VD"s;
+    case regs::VE:
+      return "VE"s;
+    case regs::VF:
+      return "VF"s;
+    case regs::PC:
+      return "PC"s;
+    default:
+      return "INVALID"s;
+  }
+}
+
 constexpr auto MEMORY_SIZE = 0x1000z;
 using memory = std::array<byte, MEMORY_SIZE>;
 

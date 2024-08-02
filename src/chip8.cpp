@@ -8,6 +8,7 @@
 #include <sstream>
 #include <utility>
 
+#include "common.h"
 #include "parser.h"
 
 namespace chip8 {
@@ -76,6 +77,10 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       return fmt::format("JP {:03x}", parsed.get_addr());
     case 0x2:
       return fmt::format("CALL {:03x}", parsed.get_addr());
+    case 0x3:
+      return fmt::format("SE {} {:02x}",
+                         reg_to_str(to_reg(parsed.get_nibble(2))),
+                         parsed.get_lo_byte());
     default:
       return fmt::format("INVALID {:04x}", parsed.get_opcode());
   }
@@ -180,6 +185,9 @@ auto chip8::exec() -> void {
     case 0x2:
       call(parsed.get_addr());
       return;
+    case 0x3:
+      se(to_reg(parsed.get_nibble(2)), parsed.get_lo_byte());
+      return;
     default:
       invalid(parsed.get_opcode());
       return;
@@ -245,48 +253,6 @@ auto chip8::debug_shell() -> void {
   }
 
   fmt::print("exiting...\n");
-}
-
-auto chip8::str_to_reg(const std::string& str) const {
-  auto reg = regs::INVALID;
-
-  if (str == "V0") {
-    reg = regs::V0;
-  } else if (str == "V1") {
-    reg = regs::V1;
-  } else if (str == "V2") {
-    reg = regs::V2;
-  } else if (str == "V3") {
-    reg = regs::V3;
-  } else if (str == "V4") {
-    reg = regs::V4;
-  } else if (str == "V5") {
-    reg = regs::V5;
-  } else if (str == "V6") {
-    reg = regs::V6;
-  } else if (str == "V7") {
-    reg = regs::V7;
-  } else if (str == "V8") {
-    reg = regs::V8;
-  } else if (str == "V9") {
-    reg = regs::V9;
-  } else if (str == "VA") {
-    reg = regs::VA;
-  } else if (str == "VB") {
-    reg = regs::VB;
-  } else if (str == "VC") {
-    reg = regs::VC;
-  } else if (str == "VD") {
-    reg = regs::VD;
-  } else if (str == "VE") {
-    reg = regs::VE;
-  } else if (str == "VF") {
-    reg = regs::VF;
-  } else if (str == "PC") {
-    reg = regs::PC;
-  }
-
-  return reg;
 }
 
 auto chip8::debug_set_regs(std::stringstream& cmd) -> void {
@@ -465,5 +431,11 @@ auto chip8::jp(word addr) -> void { m_pc = addr; };
 auto chip8::call(word addr) -> void {
   m_stack.push(m_pc);
   m_pc = addr;
+}
+
+auto chip8::se(regs reg, byte value) -> void {
+  if (get(reg) == value) {
+    m_pc += 2;
+  }
 }
 }  // namespace chip8

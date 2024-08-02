@@ -40,7 +40,10 @@ enum class regs : byte {
   VC = 0x0c,
   VD = 0x0d,
   VE = 0x0e,
-  VF = 0x0f
+  VF = 0x0f,
+
+  PC = 0xab,
+  INVALID = 0xff
 };
 
 constexpr auto from_reg(regs reg) { return std::to_underlying(reg); }

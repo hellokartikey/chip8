@@ -23,6 +23,7 @@ class chip8 {
 
  private:
   auto fetch() -> word;
+  [[nodiscard]] auto str_to_reg(const std::string& str) const;
 
  public:
   // Program API
@@ -60,6 +61,7 @@ class chip8 {
   auto debug_stk() -> void;
   auto debug_push(std::stringstream& cmd) -> void;
   auto debug_pop() -> void;
+  auto debug_set_regs(std::stringstream& cmd) -> void;
 
   auto print_memory(word begin = 0x0000_w, word end = 0x1000_w) const -> void;
   auto print_registers() const -> void;

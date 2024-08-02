@@ -10,7 +10,7 @@ auto main() -> int {
 
   auto interpreter = chip8::chip8{};
 
-  interpreter.load_program({op::CLS(), op::CALL(0x206), op::NOP(), op::RET()});
+  interpreter.load_program({op::CLS(), op::JP(0x300), op::NOP(), op::RET()});
 
   interpreter.debug_shell();
 

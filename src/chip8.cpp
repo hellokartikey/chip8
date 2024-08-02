@@ -138,7 +138,10 @@ auto chip8::write16(word addr, word data) -> void {
 
 auto chip8::fetch() -> word {
   auto opcode = read16(m_pc);
+
   m_pc += 2;
+  m_pc &= 0x0fff;
+
   return opcode;
 }
 
@@ -205,7 +208,7 @@ auto chip8::debug_shell() -> void {
       break;
     }
 
-    fmt::print("$ ");
+    fmt::print("{:03x}> ", m_pc);
 
     auto line = std::string{};
     std::getline(std::cin, line);
@@ -234,12 +237,88 @@ auto chip8::debug_shell() -> void {
       debug_push(cmd);
     } else if (sub_command == "pop") {
       debug_pop();
+    } else if (sub_command == "set") {
+      debug_set_regs(cmd);
     } else {
       fmt::print(std::cerr, "Invalid command...\n");
     }
   }
 
   fmt::print("exiting...\n");
+}
+
+auto chip8::str_to_reg(const std::string& str) const {
+  auto reg = regs::INVALID;
+
+  if (str == "V0") {
+    reg = regs::V0;
+  } else if (str == "V1") {
+    reg = regs::V1;
+  } else if (str == "V2") {
+    reg = regs::V2;
+  } else if (str == "V3") {
+    reg = regs::V3;
+  } else if (str == "V4") {
+    reg = regs::V4;
+  } else if (str == "V5") {
+    reg = regs::V5;
+  } else if (str == "V6") {
+    reg = regs::V6;
+  } else if (str == "V7") {
+    reg = regs::V7;
+  } else if (str == "V8") {
+    reg = regs::V8;
+  } else if (str == "V9") {
+    reg = regs::V9;
+  } else if (str == "VA") {
+    reg = regs::VA;
+  } else if (str == "VB") {
+    reg = regs::VB;
+  } else if (str == "VC") {
+    reg = regs::VC;
+  } else if (str == "VD") {
+    reg = regs::VD;
+  } else if (str == "VE") {
+    reg = regs::VE;
+  } else if (str == "VF") {
+    reg = regs::VF;
+  } else if (str == "PC") {
+    reg = regs::PC;
+  }
+
+  return reg;
+}
+
+auto chip8::debug_set_regs(std::stringstream& cmd) -> void {
+  if (cmd.eof()) {
+    fmt::print(std::cerr, "Invalid syntax...\n");
+    return;
+  }
+
+  auto reg_str = std::string{};
+  cmd >> reg_str;
+
+  auto reg = str_to_reg(reg_str);
+
+  if (cmd.eof()) {
+    fmt::print(std::cerr, "Invalid syntax...\n");
+    return;
+  }
+
+  auto addr = 0x0000_w;
+
+  switch (reg) {
+    case regs::INVALID:
+      fmt::print(std::cerr, "Invalid register\n");
+      return;
+    case regs::PC:
+      cmd >> std::hex >> addr;
+      m_pc = address(addr);
+      return;
+    default:
+      cmd >> std::hex >> addr;
+      get(reg) = addr;
+  }
 }
 
 auto chip8::debug_push(std::stringstream& cmd) -> void {
@@ -302,6 +381,7 @@ auto chip8::debug_help(std::stringstream& cmd) -> void {
   fmt::print(
       "Available commands\n"
       "  regs                 Print all registers\n"
+      "  set [reg] [value]    Set value of register\n"
       "  mem [begin] [end]    Print memory\n"
       "  dasm [begin] [end]   Disassemble instructions\n"
       "  si [count]           Execute instructions\n"
@@ -334,8 +414,8 @@ auto chip8::debug_dasm(std::stringstream& cmd) -> void {
     end = (begin + 0x0010_w);
   }
 
-  begin &= 0xfffe;
-  end &= 0xfffe;
+  begin &= 0x0ffe;
+  end &= 0x0ffe;
 
   for (auto addr = begin; addr < end; addr += 2) {
     print_opcode(addr);

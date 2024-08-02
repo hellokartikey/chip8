@@ -78,7 +78,11 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
     case 0x2:
       return fmt::format("CALL {:03x}", parsed.get_addr());
     case 0x3:
-      return fmt::format("SE {} {:02x}",
+      return fmt::format("SE {}, {:02x}",
+                         reg_to_str(to_reg(parsed.get_nibble(2))),
+                         parsed.get_lo_byte());
+    case 0x4:
+      return fmt::format("SNE {}, {:02x}",
                          reg_to_str(to_reg(parsed.get_nibble(2))),
                          parsed.get_lo_byte());
     default:
@@ -187,6 +191,9 @@ auto chip8::exec() -> void {
       return;
     case 0x3:
       se(to_reg(parsed.get_nibble(2)), parsed.get_lo_byte());
+      return;
+    case 0x4:
+      sne(to_reg(parsed.get_nibble(2)), parsed.get_lo_byte());
       return;
     default:
       invalid(parsed.get_opcode());
@@ -435,6 +442,12 @@ auto chip8::call(word addr) -> void {
 
 auto chip8::se(regs reg, byte value) -> void {
   if (get(reg) == value) {
+    m_pc += 2;
+  }
+}
+
+auto chip8::sne(regs reg, byte value) -> void {
+  if (get(reg) != value) {
     m_pc += 2;
   }
 }

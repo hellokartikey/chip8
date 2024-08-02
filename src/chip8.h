@@ -46,6 +46,7 @@ class chip8 {
   auto jp(word addr) -> void;
   auto call(word addr) -> void;
   auto se(regs reg, byte value) -> void;
+  auto sne(regs reg, byte value) -> void;
 
   auto invalid(word opcode) -> void;
 

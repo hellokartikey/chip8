@@ -10,7 +10,7 @@ auto main() -> int {
 
   auto interpreter = chip8::chip8{};
 
-  interpreter.load_program({op::SE(chip8::regs::V0, 0x64), op::JP(0x0def)});
+  interpreter.load_program({op::SNE(chip8::regs::V0, 0x64), op::JP(0x0def)});
 
   interpreter.debug_shell();
 

@@ -7,18 +7,18 @@ All library dependencies are downloaded and linked statically using CMake.
 
 The project depends on
 -   raylib
--   fmt
+-   {fmt}
 
 Optional dependencies for testing
--   gtest
+-   GoogleTest
 
 The project also uses tools for static analysis and formating
--   clang-tidy
--   clang-format
+-   Clang-Tidy
+-   Clang-Format
 
 ## Build
 
-Build options available
+Build options
 -   `-DBUILD_TESTS=ON` : Build unit tests
 -   `-DCLANG_TIDY=ON` : Enable clang-tidy static analysis
 -   `-DCLANG_FORMAT=ON` : Enable clang-format code formatting

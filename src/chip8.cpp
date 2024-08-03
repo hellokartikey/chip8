@@ -85,6 +85,9 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       return fmt::format("SNE {}, {:02x}",
                          reg_to_str(to_reg(parsed.get_nibble(2))),
                          parsed.get_lo_byte());
+    case 0x5:
+      return fmt::format("SE {}, {}", reg_to_str(to_reg(parsed.get_nibble(2))),
+                         reg_to_str(to_reg(parsed.get_nibble(1))));
     default:
       return fmt::format("INVALID {:04x}", parsed.get_opcode());
   }
@@ -194,6 +197,9 @@ auto chip8::exec() -> void {
       return;
     case 0x4:
       sne(to_reg(parsed.get_nibble(2)), parsed.get_lo_byte());
+      return;
+    case 0x5:
+      se(to_reg(parsed.get_nibble(2)), to_reg(parsed.get_nibble(1)));
       return;
     default:
       invalid(parsed.get_opcode());
@@ -433,7 +439,7 @@ auto chip8::cls() -> void {
 
 auto chip8::ret() -> void { m_pc = m_stack.pop(); }
 
-auto chip8::jp(word addr) -> void { m_pc = addr; };
+auto chip8::jp(word addr) -> void { m_pc = address(addr); };
 
 auto chip8::call(word addr) -> void {
   m_stack.push(m_pc);
@@ -442,6 +448,12 @@ auto chip8::call(word addr) -> void {
 
 auto chip8::se(regs reg, byte value) -> void {
   if (get(reg) == value) {
+    m_pc += 2;
+  }
+}
+
+auto chip8::se(regs reg1, regs reg2) -> void {
+  if (get(reg1) == get(reg2)) {
     m_pc += 2;
   }
 }

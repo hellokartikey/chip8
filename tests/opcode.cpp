@@ -21,7 +21,7 @@ TEST(Opcode, CALL) {
   EXPECT_EQ(op::CALL(0xabcd), 0x2bcd);
 }
 
-TEST(Opcode, SE_BYTE) {
+TEST(Opcode, SEbyte) {
   EXPECT_EQ(op::SE(regs::V0, 0x64), 0x3064);
   EXPECT_EQ(op::SE(regs::V1, 0x12), 0x3112);
   EXPECT_EQ(op::SE(regs::V4, 0xde), 0x34de);
@@ -45,7 +45,7 @@ TEST(Opcode, SNE) {
   EXPECT_EQ(op::SNE(regs::VF, 0xef), 0x4fef);
 }
 
-TEST(Opcode, SE_REGS) {
+TEST(Opcode, SEregs) {
   EXPECT_EQ(op::SE(regs::V0, regs::V0), 0x5000);
   EXPECT_EQ(op::SE(regs::VA, regs::VF), 0x5af0);
   EXPECT_EQ(op::SE(regs::VB, regs::VC), 0x5bc0);
@@ -57,4 +57,23 @@ TEST(Opcode, SE_REGS) {
   EXPECT_EQ(op::SE(regs::V0, regs::V1), 0x5010);
   EXPECT_EQ(op::SE(regs::V7, regs::V6), 0x5760);
   EXPECT_EQ(op::SE(regs::V2, regs::V8), 0x5280);
+}
+
+TEST(Opcode, LDbyte) {
+  EXPECT_EQ(op::LD(regs::V0, 0x50), 0x6050);
+  EXPECT_EQ(op::LD(regs::V1, 0x51), 0x6151);
+  EXPECT_EQ(op::LD(regs::V2, 0x52), 0x6252);
+  EXPECT_EQ(op::LD(regs::V3, 0x53), 0x6353);
+  EXPECT_EQ(op::LD(regs::V4, 0x54), 0x6454);
+  EXPECT_EQ(op::LD(regs::V5, 0x55), 0x6555);
+  EXPECT_EQ(op::LD(regs::V6, 0x56), 0x6656);
+  EXPECT_EQ(op::LD(regs::V7, 0x57), 0x6757);
+  EXPECT_EQ(op::LD(regs::V8, 0x58), 0x6858);
+  EXPECT_EQ(op::LD(regs::V9, 0x59), 0x6959);
+  EXPECT_EQ(op::LD(regs::VA, 0x5a), 0x6a5a);
+  EXPECT_EQ(op::LD(regs::VB, 0x5b), 0x6b5b);
+  EXPECT_EQ(op::LD(regs::VC, 0x5c), 0x6c5c);
+  EXPECT_EQ(op::LD(regs::VD, 0x5d), 0x6d5d);
+  EXPECT_EQ(op::LD(regs::VE, 0x5e), 0x6e5e);
+  EXPECT_EQ(op::LD(regs::VF, 0x5f), 0x6f5f);
 }

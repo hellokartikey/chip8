@@ -4,14 +4,14 @@
 #include "instructions.h"
 
 namespace op = chip8::opcode;
+using chip8::regs;
 
 auto main() -> int {
   fmt::print("chip8 emulator by hellokartikey!\n");
 
   auto interpreter = chip8::chip8{};
 
-  interpreter.load_program(
-      {op::SE(chip8::regs::V0, chip8::regs::V1), op::JP(0x0def)});
+  interpreter.load_program({op::LD(regs::V5, 0x64)});
 
   interpreter.debug_shell();
 

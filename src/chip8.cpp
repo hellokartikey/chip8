@@ -88,6 +88,10 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
     case 0x5:
       return fmt::format("SE {}, {}", reg_to_str(to_reg(parsed.get_nibble(2))),
                          reg_to_str(to_reg(parsed.get_nibble(1))));
+    case 0x6:
+      return fmt::format("LD {}, {:02x}",
+                         reg_to_str(to_reg(parsed.get_nibble(2))),
+                         parsed.get_lo_byte());
     default:
       return fmt::format("INVALID {:04x}", parsed.get_opcode());
   }
@@ -200,6 +204,9 @@ auto chip8::exec() -> void {
       return;
     case 0x5:
       se(to_reg(parsed.get_nibble(2)), to_reg(parsed.get_nibble(1)));
+      return;
+    case 0x6:
+      ld(to_reg(parsed.get_nibble(2)), parsed.get_lo_byte());
       return;
     default:
       invalid(parsed.get_opcode());
@@ -463,4 +470,6 @@ auto chip8::sne(regs reg, byte value) -> void {
     m_pc += 2;
   }
 }
+
+auto chip8::ld(regs reg, byte value) -> void { get(reg) = value; }
 }  // namespace chip8

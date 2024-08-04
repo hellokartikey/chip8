@@ -48,6 +48,7 @@ class chip8 {
   auto se(regs reg, byte value) -> void;
   auto se(regs reg1, regs reg2) -> void;
   auto sne(regs reg, byte value) -> void;
+  auto ld(regs reg, byte value) -> void;
 
   auto invalid(word opcode) -> void;
 

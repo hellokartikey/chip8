@@ -48,14 +48,19 @@ constexpr auto ADD(regs reg, byte value) -> word {
   return 0x7000 | (from_reg(reg) << 8) | static_cast<word>(value);
 }
 
-// Set reg1 = reg2
-constexpr auto LD(regs reg1, regs reg2) -> word {
-  return 0x8000 | (from_reg(reg1) << 8) | (from_reg(reg2) << 4);
+// Set dst = src
+constexpr auto LD(regs dst, regs src) -> word {
+  return 0x8000 | (from_reg(dst) << 8) | (from_reg(src) << 4);
 }
 
-// Set Vx = Vx & Vy
-constexpr auto OR(regs reg1, regs reg2) -> word {
-  return 0x8001 | (from_reg(reg1) << 8) | (from_reg(reg2) << 4);
+// Set dst = dst | src
+constexpr auto OR(regs dst, regs src) -> word {
+  return 0x8001 | (from_reg(dst) << 8) | (from_reg(src) << 4);
+}
+
+// Set dst = dst & src
+constexpr auto AND(regs dst, regs src) -> word {
+  return 0x8002 | (from_reg(dst) << 8) | (from_reg(src) << 4);
 }
 }  // namespace chip8::opcode
 

@@ -62,50 +62,42 @@ auto chip8::print_registers() const -> void {
 auto chip8::parse_opcode(word opcode) const -> std::string {
   auto parsed = parsed_instruction{opcode};
 
+  auto addr = parsed.get_addr();
+  auto lo_byte = parsed.get_lo_byte();
+  auto reg_x = reg_to_str(to_reg(parsed.get_nibble(2)));
+  auto reg_y = reg_to_str(to_reg(parsed.get_nibble(1)));
+
   switch (parsed.get_nibble(3)) {
     case 0x0:
-      switch (parsed.get_opcode()) {
+      switch (opcode) {
         case opcode::CLS():
           return fmt::format("CLS");
         case opcode::RET():
           return fmt::format("RET");
         default:
-          return fmt::format("SYS {:03x}", parsed.get_addr());
+          return fmt::format("SYS {:03x}", addr);
       }
       break;
     case 0x1:
-      return fmt::format("JP {:03x}", parsed.get_addr());
+      return fmt::format("JP {:03x}", addr);
     case 0x2:
-      return fmt::format("CALL {:03x}", parsed.get_addr());
+      return fmt::format("CALL {:03x}", addr);
     case 0x3:
-      return fmt::format("SE {}, {:02x}",
-                         reg_to_str(to_reg(parsed.get_nibble(2))),
-                         parsed.get_lo_byte());
+      return fmt::format("SE {}, {:02x}", reg_x, lo_byte);
     case 0x4:
-      return fmt::format("SNE {}, {:02x}",
-                         reg_to_str(to_reg(parsed.get_nibble(2))),
-                         parsed.get_lo_byte());
+      return fmt::format("SNE {}, {:02x}", reg_x, lo_byte);
     case 0x5:
-      return fmt::format("SE {}, {}", reg_to_str(to_reg(parsed.get_nibble(2))),
-                         reg_to_str(to_reg(parsed.get_nibble(1))));
+      return fmt::format("SE {}, {}", reg_x, reg_y);
     case 0x6:
-      return fmt::format("LD {}, {:02x}",
-                         reg_to_str(to_reg(parsed.get_nibble(2))),
-                         parsed.get_lo_byte());
+      return fmt::format("LD {}, {:02x}", reg_x, lo_byte);
     case 0x7:
-      return fmt::format("ADD {}, {:02x}",
-                         reg_to_str(to_reg(parsed.get_nibble(2))),
-                         parsed.get_lo_byte());
+      return fmt::format("ADD {}, {:02x}", reg_x, lo_byte);
     case 0x8:
       switch (parsed.get_nibble(0)) {
         case 0x0:
-          return fmt::format("LD {}, {}",
-                             reg_to_str(to_reg(parsed.get_nibble(2))),
-                             reg_to_str(to_reg(parsed.get_nibble(1))));
+          return fmt::format("LD {}, {}", reg_x, reg_y);
         case 0x1:
-          return fmt::format("OR {}, {}",
-                             reg_to_str(to_reg(parsed.get_nibble(2))),
-                             reg_to_str(to_reg(parsed.get_nibble(1))));
+          return fmt::format("OR {}, {}", reg_x, reg_y);
         default:
           return invalid_opcode(parsed.get_opcode());
       }

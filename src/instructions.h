@@ -1,7 +1,6 @@
 #ifndef HK_CHIP8_INSTRUCTIONS_H
 #define HK_CHIP8_INSTRUCTIONS_H
 
-#include <functional>
 #include <initializer_list>
 
 #include "common.h"
@@ -52,6 +51,11 @@ constexpr auto ADD(regs reg, byte value) -> word {
 // Set reg1 = reg2
 constexpr auto LD(regs reg1, regs reg2) -> word {
   return 0x8000 | (from_reg(reg1) << 8) | (from_reg(reg2) << 4);
+}
+
+// Set Vx = Vx & Vy
+constexpr auto OR(regs reg1, regs reg2) -> word {
+  return 0x8001 | (from_reg(reg1) << 8) | (from_reg(reg2) << 4);
 }
 }  // namespace chip8::opcode
 

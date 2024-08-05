@@ -49,6 +49,9 @@ class chip8 {
   auto se(regs reg1, regs reg2) -> void;
   auto sne(regs reg, byte value) -> void;
   auto ld(regs reg, byte value) -> void;
+  auto add(regs reg, byte value) -> void;
+  auto ld(regs dst, regs src) -> void;
+  auto or_(regs reg1, regs reg2) -> void;
 
   auto invalid(word opcode) -> void;
 
@@ -70,6 +73,7 @@ class chip8 {
   auto print_registers() const -> void;
 
   [[nodiscard]] auto parse_opcode(word opcode) const -> std::string;
+  [[nodiscard]] auto invalid_opcode(word opcode) const -> std::string;
   auto print_opcode(word addr) const -> void;
 
   registers m_registers{};

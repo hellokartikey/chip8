@@ -11,7 +11,8 @@ auto main() -> int {
 
   auto interpreter = chip8::chip8{};
 
-  interpreter.load_program({op::LD(regs::V5, 0x64)});
+  interpreter.load_program({op::LD(regs::V5, 0xaa), op::LD(regs::VF, 0x55),
+                            op::LD(regs::V5, regs::VF)});
 
   interpreter.debug_shell();
 

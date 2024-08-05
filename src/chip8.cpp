@@ -92,10 +92,32 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       return fmt::format("LD {}, {:02x}",
                          reg_to_str(to_reg(parsed.get_nibble(2))),
                          parsed.get_lo_byte());
+    case 0x7:
+      return fmt::format("ADD {}, {:02x}",
+                         reg_to_str(to_reg(parsed.get_nibble(2))),
+                         parsed.get_lo_byte());
+    case 0x8:
+      switch (parsed.get_nibble(0)) {
+        case 0x0:
+          return fmt::format("LD {}, {}",
+                             reg_to_str(to_reg(parsed.get_nibble(2))),
+                             reg_to_str(to_reg(parsed.get_nibble(1))));
+        case 0x1:
+          return fmt::format("OR {}, {}",
+                             reg_to_str(to_reg(parsed.get_nibble(2))),
+                             reg_to_str(to_reg(parsed.get_nibble(1))));
+        default:
+          return invalid_opcode(parsed.get_opcode());
+      }
+      break;
     default:
-      return fmt::format("INVALID {:04x}", parsed.get_opcode());
+      return invalid_opcode(parsed.get_opcode());
   }
 };
+
+auto chip8::invalid_opcode(word opcode) const -> std::string {
+  return fmt::format("INVALID {:04x}", opcode);
+}
 
 auto chip8::print_opcode(word addr) const -> void {
   if (addr == m_pc) {
@@ -176,9 +198,15 @@ auto chip8::load_program(opcode::instructions program) -> void {
 auto chip8::exec() -> void {
   auto parsed = parsed_instruction(fetch());
 
+  auto opcode = parsed.get_opcode();
+  auto addr = parsed.get_addr();
+  auto lo_byte = parsed.get_lo_byte();
+  auto reg_x = to_reg(parsed.get_nibble(2));
+  auto reg_y = to_reg(parsed.get_nibble(1));
+
   switch (parsed.get_nibble(3)) {
     case 0x0:
-      switch (parsed.get_opcode()) {
+      switch (opcode) {
         case 0x00e0:
           cls();
           return;
@@ -186,30 +214,45 @@ auto chip8::exec() -> void {
           ret();
           return;
         default:
-          sys(parsed.get_addr());
+          sys(addr);
           return;
       }
       break;
     case 0x1:
-      jp(parsed.get_addr());
+      jp(addr);
       return;
     case 0x2:
-      call(parsed.get_addr());
+      call(addr);
       return;
     case 0x3:
-      se(to_reg(parsed.get_nibble(2)), parsed.get_lo_byte());
+      se(reg_x, lo_byte);
       return;
     case 0x4:
-      sne(to_reg(parsed.get_nibble(2)), parsed.get_lo_byte());
+      sne(reg_x, lo_byte);
       return;
     case 0x5:
-      se(to_reg(parsed.get_nibble(2)), to_reg(parsed.get_nibble(1)));
+      se(reg_x, reg_y);
       return;
     case 0x6:
-      ld(to_reg(parsed.get_nibble(2)), parsed.get_lo_byte());
+      ld(reg_x, lo_byte);
       return;
+    case 0x7:
+      add(reg_x, lo_byte);
+      return;
+    case 0x8:
+      switch (parsed.get_nibble(0)) {
+        case 0x0:
+          ld(reg_x, reg_y);
+          return;
+        case 0x1:
+          or_(reg_x, reg_y);
+          return;
+        default:
+          invalid(opcode);
+          return;
+      }
     default:
-      invalid(parsed.get_opcode());
+      invalid(opcode);
       return;
   }
 
@@ -472,4 +515,10 @@ auto chip8::sne(regs reg, byte value) -> void {
 }
 
 auto chip8::ld(regs reg, byte value) -> void { get(reg) = value; }
+
+auto chip8::add(regs reg, byte value) -> void { get(reg) += value; }
+
+auto chip8::ld(regs dst, regs src) -> void { get(dst) = get(src); }
+
+auto chip8::or_(regs reg1, regs reg2) -> void { get(reg1) |= get(reg2); }
 }  // namespace chip8

@@ -102,6 +102,8 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
           return fmt::format("AND {}, {}", reg_x, reg_y);
         case 0x3:
           return fmt::format("XOR {}, {}", reg_x, reg_y);
+        case 0x4:
+          return fmt::format("ADD {}, {}", reg_x, reg_y);
         default:
           return invalid_opcode(parsed.get_opcode());
       }
@@ -248,6 +250,9 @@ auto chip8::exec() -> void {
           return;
         case 0x3:
           xor_(reg_x, reg_y);
+          return;
+        case 0x4:
+          add(reg_x, reg_y);
           return;
         default:
           invalid(opcode);
@@ -519,6 +524,12 @@ auto chip8::sne(regs reg, byte value) -> void {
 auto chip8::ld(regs reg, byte value) -> void { get(reg) = value; }
 
 auto chip8::add(regs reg, byte value) -> void { get(reg) += value; }
+
+auto chip8::add(regs dst, regs src) -> void {
+  auto res = get(dst) + get(src);
+  get(regs::VF) = res > 255 ? 0x01 : 0x00;
+  get(dst) = static_cast<byte>(res);
+}
 
 auto chip8::ld(regs dst, regs src) -> void { get(dst) = get(src); }
 

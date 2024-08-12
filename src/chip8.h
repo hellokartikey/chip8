@@ -50,6 +50,7 @@ class chip8 {
   auto sne(regs reg, byte value) -> void;
   auto ld(regs reg, byte value) -> void;
   auto add(regs reg, byte value) -> void;
+  auto add(regs dst, regs src) -> void;
   auto ld(regs dst, regs src) -> void;
   auto or_(regs dst, regs src) -> void;
   auto and_(regs dst, regs src) -> void;

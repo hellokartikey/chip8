@@ -66,6 +66,10 @@ constexpr auto AND(regs dst, regs src) -> word {
 constexpr auto XOR(regs dst, regs src) -> word {
   return 0x8003 | (from_reg(dst) << 8) | (from_reg(src) << 4);
 }
+
+constexpr auto ADD(regs dst, regs src) -> word {
+  return 0x8004 | (from_reg(dst) << 8) | (from_reg(src) << 4);
+}
 }  // namespace chip8::opcode
 
 #endif

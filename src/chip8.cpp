@@ -100,6 +100,8 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
           return fmt::format("OR {}, {}", reg_x, reg_y);
         case 0x2:
           return fmt::format("AND {}, {}", reg_x, reg_y);
+        case 0x3:
+          return fmt::format("XOR {}, {}", reg_x, reg_y);
         default:
           return invalid_opcode(parsed.get_opcode());
       }
@@ -243,6 +245,9 @@ auto chip8::exec() -> void {
           return;
         case 0x2:
           and_(reg_x, reg_y);
+          return;
+        case 0x3:
+          xor_(reg_x, reg_y);
           return;
         default:
           invalid(opcode);
@@ -520,4 +525,6 @@ auto chip8::ld(regs dst, regs src) -> void { get(dst) = get(src); }
 auto chip8::or_(regs dst, regs src) -> void { get(dst) |= get(src); }
 
 auto chip8::and_(regs dst, regs src) -> void { get(dst) &= get(src); }
+
+auto chip8::xor_(regs dst, regs src) -> void { get(dst) ^= get(src); }
 }  // namespace chip8

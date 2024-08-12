@@ -138,3 +138,17 @@ TEST(Opcode, AND) {
   EXPECT_EQ(op::AND(regs::V7, regs::V6), 0x8762);
   EXPECT_EQ(op::AND(regs::V2, regs::V8), 0x8282);
 }
+
+TEST(Opcode, XOR) {
+  EXPECT_EQ(op::XOR(regs::V0, regs::V0), 0x8003);
+  EXPECT_EQ(op::XOR(regs::VA, regs::VF), 0x8af3);
+  EXPECT_EQ(op::XOR(regs::VB, regs::VC), 0x8bc3);
+  EXPECT_EQ(op::XOR(regs::V6, regs::VA), 0x86a3);
+  EXPECT_EQ(op::XOR(regs::V7, regs::V4), 0x8743);
+  EXPECT_EQ(op::XOR(regs::V3, regs::V2), 0x8323);
+  EXPECT_EQ(op::XOR(regs::V5, regs::V9), 0x8593);
+  EXPECT_EQ(op::XOR(regs::VD, regs::V0), 0x8d03);
+  EXPECT_EQ(op::XOR(regs::V0, regs::V1), 0x8013);
+  EXPECT_EQ(op::XOR(regs::V7, regs::V6), 0x8763);
+  EXPECT_EQ(op::XOR(regs::V2, regs::V8), 0x8283);
+}

@@ -104,6 +104,8 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
           return fmt::format("XOR {}, {}", reg_x, reg_y);
         case 0x4:
           return fmt::format("ADD {}, {}", reg_x, reg_y);
+        case 0x5:
+          return fmt::format("SUB {}, {}", reg_x, reg_y);
         default:
           return invalid_opcode(parsed.get_opcode());
       }
@@ -253,6 +255,9 @@ auto chip8::exec() -> void {
           return;
         case 0x4:
           add(reg_x, reg_y);
+          return;
+        case 0x05:
+          sub(reg_x, reg_y);
           return;
         default:
           invalid(opcode);
@@ -538,4 +543,12 @@ auto chip8::or_(regs dst, regs src) -> void { get(dst) |= get(src); }
 auto chip8::and_(regs dst, regs src) -> void { get(dst) &= get(src); }
 
 auto chip8::xor_(regs dst, regs src) -> void { get(dst) ^= get(src); }
+
+auto chip8::sub(regs dst, regs src) -> void {
+  if (not(get(dst) < get(src))) {
+    get(regs::VF) = 0x01;
+  }
+
+  get(dst) -= get(src);
+}
 }  // namespace chip8

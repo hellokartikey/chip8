@@ -166,3 +166,17 @@ TEST(Opcode, ADDregs) {
   EXPECT_EQ(op::ADD(regs::V7, regs::V6), 0x8764);
   EXPECT_EQ(op::ADD(regs::V2, regs::V8), 0x8284);
 }
+
+TEST(Opcode, SUB) {
+  EXPECT_EQ(op::SUB(regs::V0, regs::V0), 0x8005);
+  EXPECT_EQ(op::SUB(regs::VA, regs::VF), 0x8af5);
+  EXPECT_EQ(op::SUB(regs::VB, regs::VC), 0x8bc5);
+  EXPECT_EQ(op::SUB(regs::V6, regs::VA), 0x86a5);
+  EXPECT_EQ(op::SUB(regs::V7, regs::V4), 0x8745);
+  EXPECT_EQ(op::SUB(regs::V3, regs::V2), 0x8325);
+  EXPECT_EQ(op::SUB(regs::V5, regs::V9), 0x8595);
+  EXPECT_EQ(op::SUB(regs::VD, regs::V0), 0x8d05);
+  EXPECT_EQ(op::SUB(regs::V0, regs::V1), 0x8015);
+  EXPECT_EQ(op::SUB(regs::V7, regs::V6), 0x8765);
+  EXPECT_EQ(op::SUB(regs::V2, regs::V8), 0x8285);
+}

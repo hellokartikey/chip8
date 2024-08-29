@@ -55,6 +55,7 @@ class chip8 {
   auto or_(regs dst, regs src) -> void;
   auto and_(regs dst, regs src) -> void;
   auto xor_(regs dst, regs src) -> void;
+  auto sub(regs dst, regs src) -> void;
 
   auto invalid(word opcode) -> void;
 

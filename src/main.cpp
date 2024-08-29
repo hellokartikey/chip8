@@ -11,7 +11,7 @@ auto main() -> int {
 
   auto interpreter = chip8::chip8{};
 
-  interpreter.load_program({op::SUB(regs::V1, regs::V2)});
+  interpreter.load_program({op::SHR(regs::V1, regs::V2)});
 
   interpreter.debug_shell();
 

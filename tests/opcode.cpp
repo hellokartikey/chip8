@@ -180,3 +180,17 @@ TEST(Opcode, SUB) {
   EXPECT_EQ(op::SUB(regs::V7, regs::V6), 0x8765);
   EXPECT_EQ(op::SUB(regs::V2, regs::V8), 0x8285);
 }
+
+TEST(Opcode, SHR) {
+  EXPECT_EQ(op::SHR(regs::V0, regs::V0), 0x8006);
+  EXPECT_EQ(op::SHR(regs::VA, regs::VF), 0x8af6);
+  EXPECT_EQ(op::SHR(regs::VB, regs::VC), 0x8bc6);
+  EXPECT_EQ(op::SHR(regs::V6, regs::VA), 0x86a6);
+  EXPECT_EQ(op::SHR(regs::V7, regs::V4), 0x8746);
+  EXPECT_EQ(op::SHR(regs::V3, regs::V2), 0x8326);
+  EXPECT_EQ(op::SHR(regs::V5, regs::V9), 0x8596);
+  EXPECT_EQ(op::SHR(regs::VD, regs::V0), 0x8d06);
+  EXPECT_EQ(op::SHR(regs::V0, regs::V1), 0x8016);
+  EXPECT_EQ(op::SHR(regs::V7, regs::V6), 0x8766);
+  EXPECT_EQ(op::SHR(regs::V2, regs::V8), 0x8286);
+}

@@ -236,3 +236,9 @@ TEST(Opcode, SNEregs) {
   EXPECT_EQ(op::SNE(regs::V7, regs::V6), 0x9760);
   EXPECT_EQ(op::SNE(regs::V2, regs::V8), 0x9280);
 }
+
+TEST(Opcode, LDi) {
+  EXPECT_EQ(op::LD_I(0x0def), 0xadef);
+  EXPECT_EQ(op::LD_I(0x1234), 0xa234);
+  EXPECT_EQ(op::LD_I(0xabcd), 0xabcd);
+}

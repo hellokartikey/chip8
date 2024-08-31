@@ -56,6 +56,7 @@ auto chip8::print_registers() const -> void {
   fmt::print("VE: {:02x}\tVF: {:02x}\n", get(regs::VE), get(regs::VF));
 
   fmt::print("PC: {:04x}\n", m_pc);
+  fmt::print("I : {:04x}\n", m_i);
   fmt::print("SP: {:02x}\n", m_stack.size());
 }
 
@@ -118,6 +119,8 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       break;
     case 0x9:
       return fmt::format("SNE {}, {}", reg_x, reg_y);
+    case 0xa:
+      return fmt::format("LD I, {:03x}", addr);
     default:
       return invalid_opcode(parsed.get_opcode());
   }
@@ -282,6 +285,9 @@ auto chip8::exec() -> void {
       }
     case 0x9:
       sne(reg_x, reg_y);
+      return;
+    case 0xa:
+      ld_i(addr);
       return;
     default:
       invalid(opcode);
@@ -606,4 +612,6 @@ auto chip8::sne(regs reg1, regs reg2) -> void {
     m_pc += 2;
   }
 }
+
+auto chip8::ld_i(word addr) -> void { m_i = address(addr); }
 }  // namespace chip8

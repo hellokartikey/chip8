@@ -90,6 +90,8 @@ constexpr auto SHL(regs reg, regs none = regs::V0) -> word {
 constexpr auto SNE(regs reg1, regs reg2) -> word {
   return 0x9000 | (from_reg(reg1) << 8) | (from_reg(reg2) << 4);
 }
+
+constexpr auto LD_I(word addr) -> word { return 0xa000 | address(addr); }
 }  // namespace chip8::opcode
 
 #endif

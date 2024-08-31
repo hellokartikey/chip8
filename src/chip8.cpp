@@ -121,6 +121,8 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       return fmt::format("SNE {}, {}", reg_x, reg_y);
     case 0xa:
       return fmt::format("LD I, {:03x}", addr);
+    case 0xb:
+      return fmt::format("JP V0, {:03x}", addr);
     default:
       return invalid_opcode(parsed.get_opcode());
   }
@@ -288,6 +290,9 @@ auto chip8::exec() -> void {
       return;
     case 0xa:
       ld_i(addr);
+      return;
+    case 0xb:
+      jp_v0(addr);
       return;
     default:
       invalid(opcode);
@@ -614,4 +619,6 @@ auto chip8::sne(regs reg1, regs reg2) -> void {
 }
 
 auto chip8::ld_i(word addr) -> void { m_i = address(addr); }
+
+auto chip8::jp_v0(word addr) -> void { m_pc = address(addr + get(regs::V0)); }
 }  // namespace chip8

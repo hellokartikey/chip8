@@ -61,6 +61,7 @@ class chip8 {
   auto shl(regs reg) -> void;
   auto sne(regs reg1, regs reg2) -> void;
   auto ld_i(word addr) -> void;
+  auto jp_v0(word addr) -> void;
 
   auto invalid(word opcode) -> void;
 

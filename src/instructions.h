@@ -92,6 +92,8 @@ constexpr auto SNE(regs reg1, regs reg2) -> word {
 }
 
 constexpr auto LD_I(word addr) -> word { return 0xa000 | address(addr); }
+
+constexpr auto JP_V0(word addr) -> word { return 0xb000 | address(addr); }
 }  // namespace chip8::opcode
 
 #endif

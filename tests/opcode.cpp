@@ -242,3 +242,9 @@ TEST(Opcode, LDi) {
   EXPECT_EQ(op::LD_I(0x1234), 0xa234);
   EXPECT_EQ(op::LD_I(0xabcd), 0xabcd);
 }
+
+TEST(Opcode, JPv0) {
+  EXPECT_EQ(op::JP_V0(0x0def), 0xbdef);
+  EXPECT_EQ(op::JP_V0(0x1234), 0xb234);
+  EXPECT_EQ(op::JP_V0(0xabcd), 0xbbcd);
+}

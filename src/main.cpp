@@ -11,7 +11,7 @@ auto main() -> int {
 
   auto interpreter = chip8::chip8{};
 
-  interpreter.load_program({op::LD_I(0x1234)});
+  interpreter.load_program({op::JP_V0(0x1234)});
 
   interpreter.debug_shell();
 

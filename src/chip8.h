@@ -58,6 +58,7 @@ class chip8 {
   auto sub(regs dst, regs src) -> void;
   auto shr(regs reg) -> void;
   auto subn(regs dst, regs src) -> void;
+  auto shl(regs reg) -> void;
 
   auto invalid(word opcode) -> void;
 

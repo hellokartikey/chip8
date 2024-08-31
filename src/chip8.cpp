@@ -110,6 +110,8 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
           return fmt::format("SHR {} (, {})", reg_x, reg_y);
         case 0x7:
           return fmt::format("SUBN {}, {}", reg_x, reg_y);
+        case 0xe:
+          return fmt::format("SHL {} (, {})", reg_x, reg_y);
         default:
           return invalid_opcode(parsed.get_opcode());
       }
@@ -268,6 +270,9 @@ auto chip8::exec() -> void {
           return;
         case 0x7:
           subn(reg_x, reg_y);
+          return;
+        case 0xe:
+          shl(reg_x);
           return;
         default:
           invalid(opcode);
@@ -577,5 +582,17 @@ auto chip8::subn(regs dst, regs src) -> void {
   }
 
   get(dst) = get(src) - get(dst);
+}
+
+auto chip8::shl(regs reg) -> void {
+  if ((get(reg) & 0x80) != 0x00) {
+    // MSB is 1
+    get(regs::VF) = 0x01;
+  } else {
+    // MSB is 0
+    get(regs::VF) = 0x00;
+  }
+
+  get(reg) <<= 1;
 }
 }  // namespace chip8

@@ -194,3 +194,31 @@ TEST(Opcode, SHR) {
   EXPECT_EQ(op::SHR(regs::V7, regs::V6), 0x8766);
   EXPECT_EQ(op::SHR(regs::V2, regs::V8), 0x8286);
 }
+
+TEST(Opcode, SUBN) {
+  EXPECT_EQ(op::SUBN(regs::V0, regs::V0), 0x8007);
+  EXPECT_EQ(op::SUBN(regs::VA, regs::VF), 0x8af7);
+  EXPECT_EQ(op::SUBN(regs::VB, regs::VC), 0x8bc7);
+  EXPECT_EQ(op::SUBN(regs::V6, regs::VA), 0x86a7);
+  EXPECT_EQ(op::SUBN(regs::V7, regs::V4), 0x8747);
+  EXPECT_EQ(op::SUBN(regs::V3, regs::V2), 0x8327);
+  EXPECT_EQ(op::SUBN(regs::V5, regs::V9), 0x8597);
+  EXPECT_EQ(op::SUBN(regs::VD, regs::V0), 0x8d07);
+  EXPECT_EQ(op::SUBN(regs::V0, regs::V1), 0x8017);
+  EXPECT_EQ(op::SUBN(regs::V7, regs::V6), 0x8767);
+  EXPECT_EQ(op::SUBN(regs::V2, regs::V8), 0x8287);
+}
+
+TEST(Opcode, SHL) {
+  EXPECT_EQ(op::SHL(regs::V0, regs::V0), 0x800e);
+  EXPECT_EQ(op::SHL(regs::VA, regs::VF), 0x8afe);
+  EXPECT_EQ(op::SHL(regs::VB, regs::VC), 0x8bce);
+  EXPECT_EQ(op::SHL(regs::V6, regs::VA), 0x86ae);
+  EXPECT_EQ(op::SHL(regs::V7, regs::V4), 0x874e);
+  EXPECT_EQ(op::SHL(regs::V3, regs::V2), 0x832e);
+  EXPECT_EQ(op::SHL(regs::V5, regs::V9), 0x859e);
+  EXPECT_EQ(op::SHL(regs::VD, regs::V0), 0x8d0e);
+  EXPECT_EQ(op::SHL(regs::V0, regs::V1), 0x801e);
+  EXPECT_EQ(op::SHL(regs::V7, regs::V6), 0x876e);
+  EXPECT_EQ(op::SHL(regs::V2, regs::V8), 0x828e);
+}

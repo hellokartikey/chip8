@@ -59,6 +59,7 @@ class chip8 {
   auto shr(regs reg) -> void;
   auto subn(regs dst, regs src) -> void;
   auto shl(regs reg) -> void;
+  auto sne(regs reg1, regs reg2) -> void;
 
   auto invalid(word opcode) -> void;
 

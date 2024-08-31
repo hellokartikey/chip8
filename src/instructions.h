@@ -86,6 +86,10 @@ constexpr auto SUBN(regs dst, regs src) -> word {
 constexpr auto SHL(regs reg, regs none = regs::V0) -> word {
   return 0x800e | (from_reg(reg) << 8) | (from_reg(none) << 4);
 }
+
+constexpr auto SNE(regs reg1, regs reg2) -> word {
+  return 0x9000 | (from_reg(reg1) << 8) | (from_reg(reg2) << 4);
+}
 }  // namespace chip8::opcode
 
 #endif

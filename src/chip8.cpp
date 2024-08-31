@@ -116,6 +116,8 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
           return invalid_opcode(parsed.get_opcode());
       }
       break;
+    case 0x9:
+      return fmt::format("SNE {}, {}", reg_x, reg_y);
     default:
       return invalid_opcode(parsed.get_opcode());
   }
@@ -278,6 +280,9 @@ auto chip8::exec() -> void {
           invalid(opcode);
           return;
       }
+    case 0x9:
+      sne(reg_x, reg_y);
+      return;
     default:
       invalid(opcode);
       return;
@@ -594,5 +599,11 @@ auto chip8::shl(regs reg) -> void {
   }
 
   get(reg) <<= 1;
+}
+
+auto chip8::sne(regs reg1, regs reg2) -> void {
+  if (get(reg1) != get(reg2)) {
+    m_pc += 2;
+  }
 }
 }  // namespace chip8

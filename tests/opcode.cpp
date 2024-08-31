@@ -248,3 +248,11 @@ TEST(Opcode, JPv0) {
   EXPECT_EQ(op::JP_V0(0x1234), 0xb234);
   EXPECT_EQ(op::JP_V0(0xabcd), 0xbbcd);
 }
+
+TEST(Opcode, RND) {
+  EXPECT_EQ(op::RND(regs::V0, 0x64), 0xc064);
+  EXPECT_EQ(op::RND(regs::V4, 0x55), 0xc455);
+  EXPECT_EQ(op::RND(regs::V8, 0xff), 0xc8ff);
+  EXPECT_EQ(op::RND(regs::VC, 0x96), 0xcc96);
+  EXPECT_EQ(op::RND(regs::VF, 0xab), 0xcfab);
+}

@@ -1,6 +1,8 @@
 #ifndef HK_CHIP8_CHIP8_H
 #define HK_CHIP8_CHIP8_H
 
+#include <random>
+
 #include "common.h"
 #include "instructions.h"
 #include "stack.h"
@@ -11,6 +13,8 @@ class chip8 {
   // Registers API
   auto get(regs reg) -> byte&;
   [[nodiscard]] auto get(regs reg) const -> byte;
+
+  [[nodiscard]] auto get_random() -> byte;
 
   // Memory API
   auto dump_memory() -> memory&;
@@ -62,6 +66,7 @@ class chip8 {
   auto sne(regs reg1, regs reg2) -> void;
   auto ld_i(word addr) -> void;
   auto jp_v0(word addr) -> void;
+  auto rnd(regs reg, byte value) -> void;
 
   auto invalid(word opcode) -> void;
 
@@ -78,6 +83,7 @@ class chip8 {
   auto debug_push(std::stringstream& cmd) -> void;
   auto debug_pop() -> void;
   auto debug_set_regs(std::stringstream& cmd) -> void;
+  auto debug_random() -> void;
 
   auto print_memory(word begin = 0x0000_w, word end = 0x1000_w) const -> void;
   auto print_registers() const -> void;
@@ -88,6 +94,7 @@ class chip8 {
 
   registers m_registers{};
   word m_i{};
+  byte m_r{};
 
   word m_start_addr{0x0200_w};
   word m_pc{m_start_addr};
@@ -96,6 +103,9 @@ class chip8 {
   memory m_memory{};
 
   screen m_screen{};
+
+  std::random_device random_device;
+  std::uniform_int_distribution<byte> randomness;
 };
 }  // namespace chip8
 

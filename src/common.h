@@ -42,7 +42,9 @@ enum class regs : byte {
   VE = 0x0e,
   VF = 0x0f,
 
-  PC = 0xab,
+  PC = 0xf0,
+  R = 0xf1,
+  I = 0xf2,
   INVALID = 0xff
 };
 
@@ -87,6 +89,10 @@ constexpr auto str_to_reg(const std::string& str) -> regs {
     reg = regs::VF;
   } else if (str == "PC") {
     reg = regs::PC;
+  } else if (str == "R") {
+    reg = regs::R;
+  } else if (str == "I") {
+    reg = regs::I;
   }
 
   return reg;
@@ -130,6 +136,10 @@ constexpr auto reg_to_str(regs reg) -> std::string {
       return "VF"s;
     case regs::PC:
       return "PC"s;
+    case regs::R:
+      return "R"s;
+    case regs::I:
+      return "I"s;
     default:
       return "INVALID"s;
   }

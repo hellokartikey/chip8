@@ -20,6 +20,8 @@ auto chip8::get(regs reg) const -> byte {
   return m_registers.at(std::to_underlying(reg));
 }
 
+auto chip8::get_random() -> byte { return m_r = randomness(random_device); }
+
 auto chip8::dump_memory() -> memory& { return m_memory; }
 
 auto chip8::print_memory(word begin, word end) const -> void {
@@ -58,6 +60,7 @@ auto chip8::print_registers() const -> void {
   fmt::print("PC: {:04x}\n", m_pc);
   fmt::print("I : {:04x}\n", m_i);
   fmt::print("SP: {:02x}\n", m_stack.size());
+  fmt::print("R : {:02x}\n", m_r);
 }
 
 auto chip8::parse_opcode(word opcode) const -> std::string {
@@ -123,6 +126,8 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       return fmt::format("LD I, {:03x}", addr);
     case 0xb:
       return fmt::format("JP V0, {:03x}", addr);
+    case 0xc:
+      return fmt::format("RND {}, {:02x}", reg_x, lo_byte);
     default:
       return invalid_opcode(parsed.get_opcode());
   }
@@ -294,6 +299,9 @@ auto chip8::exec() -> void {
     case 0xb:
       jp_v0(addr);
       return;
+    case 0xc:
+      rnd(reg_x, lo_byte);
+      return;
     default:
       invalid(opcode);
       return;
@@ -353,6 +361,8 @@ auto chip8::debug_shell() -> void {
       debug_pop();
     } else if (sub_command == "set") {
       debug_set_regs(cmd);
+    } else if (sub_command == "rnd") {
+      debug_random();
     } else {
       fmt::print(std::cerr, "Invalid command...\n");
     }
@@ -386,6 +396,14 @@ auto chip8::debug_set_regs(std::stringstream& cmd) -> void {
     case regs::PC:
       cmd >> std::hex >> addr;
       m_pc = address(addr);
+      return;
+    case regs::R:
+      cmd >> std::hex >> addr;
+      m_r = addr;
+      return;
+    case regs::I:
+      cmd >> std::hex >> addr;
+      m_i = address(addr);
       return;
     default:
       cmd >> std::hex >> addr;
@@ -461,6 +479,7 @@ auto chip8::debug_help(std::stringstream& cmd) -> void {
       "  push [addr]          Push an address to the stack\n"
       "  pop                  Pop an address from the stack\n"
       "  scr                  Display screen state in terminal\n"
+      "  rnd                  Generate a random byte\n"
       "  exit                 Exit\n"
       "  help                 Print this menu\n");
 }
@@ -515,6 +534,8 @@ auto chip8::debug_scr() -> void {
   fmt::print(
       "+----------------------------------------------------------------+\n");
 }
+
+auto chip8::debug_random() -> void { fmt::print("{:02x}\n", get_random()); }
 
 auto chip8::sys(word addr) -> void {
   fmt::print(std::cerr, "SYS addr not implemented by this emulator\n");
@@ -621,4 +642,8 @@ auto chip8::sne(regs reg1, regs reg2) -> void {
 auto chip8::ld_i(word addr) -> void { m_i = address(addr); }
 
 auto chip8::jp_v0(word addr) -> void { m_pc = address(addr + get(regs::V0)); }
+
+auto chip8::rnd(regs reg, byte value) -> void {
+  get(reg) = get_random() & value;
+}
 }  // namespace chip8

@@ -4,15 +4,29 @@
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
 
+#include <algorithm>
+#include <fstream>
 #include <iostream>
+#include <iterator>
 #include <sstream>
 #include <utility>
 
+#include "bit.h"
 #include "common.h"
 #include "parser.h"
+#include "screen.h"
 
 namespace chip8 {
-chip8::chip8(screen_tag_t /* unused */) : m_screen(with_screen) {}
+chip8::chip8() {
+  auto addr = 0x0050_w;
+  for (const auto& digit : letters) {
+    for (const auto& data : digit) {
+      write(addr++, data);
+    }
+  }
+}
+
+chip8::chip8(screen_tag_t /* unused */) : chip8() { m_screen.init_raylib(); }
 
 auto chip8::get(regs reg) -> byte& {
   return m_registers.at(std::to_underlying(reg));
@@ -130,6 +144,8 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       return fmt::format("JP V0, {:03x}", addr);
     case 0xc:
       return fmt::format("RND {}, {:02x}", reg_x, lo_byte);
+    case 0xd:
+      return fmt::format("DRW {}, {}, {}", reg_x, reg_y, parsed.get_nibble(0));
     default:
       return invalid_opcode(parsed.get_opcode());
   }
@@ -304,6 +320,9 @@ auto chip8::exec() -> void {
     case 0xc:
       rnd(reg_x, lo_byte);
       return;
+    case 0xd:
+      drw(reg_x, reg_y, parsed.get_nibble(0));
+      return;
     default:
       invalid(opcode);
       return;
@@ -315,15 +334,34 @@ auto chip8::exec() -> void {
 }  // namespace chip8
 
 auto chip8::exec_n(std::uint64_t count) -> void {
-  for (; count > 0; count--) {
+  for (; count > 0 and not m_is_invalid_state; count--) {
     exec();
   }
 }
 
 auto chip8::exec_all() -> void {
-  while (true) {
+  while (not m_is_invalid_state) {
     exec();
   }
+}
+
+auto chip8::load_rom(const std::filesystem::path& file) -> void {
+  if (not std::filesystem::is_regular_file(file)) {
+    fmt::print(stderr, "Invalid rom file path\n");
+    return;
+  }
+
+  std::ifstream rom{file, std::ios::binary | std::ios::ate};
+
+  auto data = 0x00_b;
+
+  auto end = rom.tellg();
+  auto rom_data = std::vector<byte>(end);
+
+  rom.seekg(std::ios::beg);
+  rom.read(reinterpret_cast<char*>(rom_data.data()), end);
+
+  std::ranges::copy(rom_data, std::next(m_memory.begin(), 0x200));
 }
 
 auto chip8::debug_shell() -> void {
@@ -375,6 +413,8 @@ auto chip8::debug_shell() -> void {
       m_screen.full();
     } else if (sub_command == "pixel") {
       debug_pixel(cmd);
+    } else if (sub_command == "rom") {
+      debug_rom(cmd);
     } else {
       fmt::print(std::cerr, "Invalid command...\n");
     }
@@ -498,6 +538,7 @@ auto chip8::debug_help(std::stringstream& cmd) -> void {
       "  clear                Clear all pixels on screen\n"
       "  full                 Fill all pixels on screen\n"
       "  pixel [x] [y]        Toggle pixel at (x, y)\n"
+      "  rom [path]           Load rom into memory\n"
       "  exit                 Exit\n"
       "  help                 Print this menu\n");
 }
@@ -581,7 +622,20 @@ auto chip8::debug_pixel(std::stringstream& cmd) -> void {
   cmd >> idx_x;
   cmd >> idx_y;
 
-  m_screen[idx_x, idx_y] = ~m_screen[idx_x, idx_y];
+  if (idx_x < screen::WIDTH and idx_y < screen::HEIGHT) {
+    m_screen[idx_x, idx_y] = ~m_screen[idx_x, idx_y];
+  }
+}
+
+auto chip8::debug_rom(std::stringstream& cmd) -> void {
+  if (cmd.eof()) {
+    fmt::print(stderr, "Invalid syntax.\n");
+    return;
+  }
+
+  std::filesystem::path file{};
+  cmd >> file;
+  load_rom(file);
 }
 
 auto chip8::sys(word addr) -> void {
@@ -590,6 +644,7 @@ auto chip8::sys(word addr) -> void {
 
 auto chip8::invalid(word opcode) -> void {
   fmt::print(stderr, "Unsupported opcode {:04x}\n", opcode);
+  m_is_invalid_state = true;
 }
 
 auto chip8::cls() -> void { m_screen.clear(); }
@@ -688,5 +743,21 @@ auto chip8::jp_v0(word addr) -> void { m_pc = address(addr + get(regs::V0)); }
 
 auto chip8::rnd(regs reg, byte value) -> void {
   get(reg) = get_random() & value;
+}
+
+auto chip8::drw(regs reg_x, regs reg_y, byte count) -> void {
+  auto idx_x = get(reg_x);
+  auto idx_y = get(reg_y);
+
+  auto iter = m_screen.pixel_iter(idx_x, idx_y);
+  auto addr = m_i;
+
+  while (count-- != 0) {
+    auto data = read(addr++);
+    for (auto i = begin(data); i != end(data); i++) {
+      *iter = (*i) ^ (*iter);
+      iter++;
+    }
+  }
 }
 }  // namespace chip8

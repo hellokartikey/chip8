@@ -1,9 +1,13 @@
 #ifndef HK_CHIP8_SCREEN_H
 #define HK_CHIP8_SCREEN_H
 
+#include <bitset>
+
 #include "common.h"
 
 namespace chip8 {
+class pixel_iterator;
+
 class screen {
  public:
   static constexpr auto WIDTH = 64Z;
@@ -42,9 +46,40 @@ class screen {
   auto begin() -> iterator;
   auto end() -> iterator;
 
+  auto pixel_iter(std::size_t idx_x, std::size_t idx_y) -> pixel_iterator;
+
  private:
   inner_type m_screen;
   bool m_is_init_raylib{false};
+};
+
+class pixel_iterator {
+ public:
+  explicit pixel_iterator(screen& p_screen, std::size_t pix_x = 0,
+                          std::size_t pix_y = 0);
+
+  auto operator++() -> pixel_iterator&;
+  auto operator++(int) -> pixel_iterator;
+
+  auto operator--() -> pixel_iterator&;
+  auto operator--(int) -> pixel_iterator;
+
+  auto operator*() -> screen::reference;
+  auto operator*() const -> bool;
+
+ private:
+  auto inc_idx() -> void;
+  auto dec_idx() -> void;
+
+  auto inc_x() -> void;
+  auto dec_x() -> void;
+
+  auto inc_y() -> void;
+  auto dec_y() -> void;
+
+  screen* m_screen;
+  std::size_t m_idx_x;
+  std::size_t m_idx_y;
 };
 }  // namespace chip8
 

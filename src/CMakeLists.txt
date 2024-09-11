@@ -19,6 +19,7 @@ INTERFACE
   parser.h
   stack.h
   screen.h
+  bit.h
 )
 
 add_executable(chip8)

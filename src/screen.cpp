@@ -77,4 +77,71 @@ auto screen::operator[](std::size_t idx_x, std::size_t idx_y) -> reference {
 auto screen::begin() -> iterator { return m_screen.begin(); }
 
 auto screen::end() -> iterator { return m_screen.end(); }
+
+auto screen::pixel_iter(std::size_t idx_x,
+                        std::size_t idx_y) -> pixel_iterator {
+  return pixel_iterator(*this, idx_x, idx_y);
+}
+
+pixel_iterator::pixel_iterator(screen& p_screen, std::size_t pix_x,
+                               std::size_t pix_y)
+    : m_screen(&p_screen),
+      m_idx_x(pix_x % screen::WIDTH),
+      m_idx_y(pix_y % screen::HEIGHT) {}
+
+auto pixel_iterator::operator++() -> pixel_iterator& {
+  inc_idx();
+  return *this;
+}
+
+auto pixel_iterator::operator++(int) -> pixel_iterator {
+  auto old = *this;
+  operator++();
+  return old;
+}
+
+auto pixel_iterator::operator--() -> pixel_iterator& {
+  dec_idx();
+  return *this;
+}
+
+auto pixel_iterator::operator--(int) -> pixel_iterator {
+  auto old = *this;
+  operator--();
+  return old;
+}
+
+auto pixel_iterator::operator*() -> screen::reference {
+  auto& screen_v = *(this->m_screen);
+  return screen_v[m_idx_x, m_idx_y];
+}
+
+auto pixel_iterator::operator*() const -> bool {
+  const auto& screen_v = *(this->m_screen);
+  return screen_v[m_idx_x, m_idx_y];
+}
+
+auto pixel_iterator::inc_idx() -> void { inc_x(); }
+
+auto pixel_iterator::dec_idx() -> void { dec_x(); }
+
+auto pixel_iterator::inc_x() -> void { m_idx_x++; }
+
+auto pixel_iterator::dec_x() -> void { m_idx_x--; }
+
+auto pixel_iterator::inc_y() -> void {
+  if (m_idx_y == 63) {
+    m_idx_y = 0;
+  } else {
+    m_idx_y++;
+  }
+}
+
+auto pixel_iterator::dec_y() -> void {
+  if (m_idx_y == 0) {
+    m_idx_y = 63;
+  } else {
+    m_idx_y--;
+  }
+}
 }  // namespace chip8

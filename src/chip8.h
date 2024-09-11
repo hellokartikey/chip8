@@ -1,6 +1,7 @@
 #ifndef HK_CHIP8_CHIP8_H
 #define HK_CHIP8_CHIP8_H
 
+#include <filesystem>
 #include <random>
 
 #include "common.h"
@@ -11,7 +12,7 @@
 namespace chip8 {
 class chip8 {
  public:
-  explicit chip8() = default;
+  explicit chip8();
   explicit chip8(screen_tag_t /* unused */);
   ~chip8() = default;
 
@@ -54,6 +55,9 @@ class chip8 {
   // Execute continously
   auto exec_all() -> void;
 
+  // Rom file API
+  auto load_rom(const std::filesystem::path& file) -> void;
+
  private:
   auto sys(word addr) -> void;
   auto cls() -> void;
@@ -78,6 +82,7 @@ class chip8 {
   auto ld_i(word addr) -> void;
   auto jp_v0(word addr) -> void;
   auto rnd(regs reg, byte value) -> void;
+  auto drw(regs reg_x, regs reg_y, byte count) -> void;
 
   auto invalid(word opcode) -> void;
 
@@ -97,6 +102,7 @@ class chip8 {
   auto debug_random() -> void;
   auto debug_screen(std::stringstream& cmd) -> void;
   auto debug_pixel(std::stringstream& cmd) -> void;
+  auto debug_rom(std::stringstream& cmd) -> void;
 
   auto print_memory(word begin = 0x0000_w, word end = 0x1000_w) const -> void;
   auto print_registers() const -> void;
@@ -108,6 +114,8 @@ class chip8 {
   registers m_registers{};
   word m_i{};
   byte m_r{};
+
+  bool m_is_invalid_state{false};
 
   word m_start_addr{0x0200_w};
   word m_pc{m_start_addr};

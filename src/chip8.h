@@ -83,6 +83,7 @@ class chip8 {
   auto jp_v0(word addr) -> void;
   auto rnd(regs reg, byte value) -> void;
   auto drw(regs reg_x, regs reg_y, byte count) -> void;
+  auto ld_dt(regs reg) -> void;
 
   auto invalid(word opcode) -> void;
 
@@ -114,6 +115,9 @@ class chip8 {
   registers m_registers{};
   word m_i{};
   byte m_r{};
+
+  byte m_dt{};
+  byte m_st{};
 
   bool m_is_invalid_state{false};
 

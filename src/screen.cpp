@@ -55,6 +55,12 @@ auto screen::init_raylib() -> void {
     SetTraceLogLevel(LOG_ERROR);
     InitWindow(WIDTH * PIXEL, HEIGHT * PIXEL, "hellokartikey - CHIP8 Emulator");
 
+    BeginDrawing();
+
+    ClearBackground(BLACK);
+
+    EndDrawing();
+
     m_is_init_raylib = true;
   }
 }
@@ -87,7 +93,9 @@ pixel_iterator::pixel_iterator(screen& p_screen, std::size_t pix_x,
                                std::size_t pix_y)
     : m_screen(&p_screen),
       m_idx_x(pix_x % screen::WIDTH),
-      m_idx_y(pix_y % screen::HEIGHT) {}
+      m_idx_y(pix_y % screen::HEIGHT),
+      m_orig_x(m_idx_x),
+      m_orig_y(m_idx_y) {}
 
 auto pixel_iterator::operator++() -> pixel_iterator& {
   inc_idx();
@@ -121,27 +129,23 @@ auto pixel_iterator::operator*() const -> bool {
   return screen_v[m_idx_x, m_idx_y];
 }
 
-auto pixel_iterator::inc_idx() -> void { inc_x(); }
-
-auto pixel_iterator::dec_idx() -> void { dec_x(); }
-
-auto pixel_iterator::inc_x() -> void { m_idx_x++; }
-
-auto pixel_iterator::dec_x() -> void { m_idx_x--; }
-
-auto pixel_iterator::inc_y() -> void {
-  if (m_idx_y == 63) {
-    m_idx_y = 0;
-  } else {
-    m_idx_y++;
+auto pixel_iterator::inc_idx() -> void {
+  m_idx_x++;
+  if ((m_idx_x - m_orig_x) < 8) {
+    return;
   }
+
+  m_idx_x = m_orig_x;
+  m_idx_y++;
 }
 
-auto pixel_iterator::dec_y() -> void {
-  if (m_idx_y == 0) {
-    m_idx_y = 63;
-  } else {
-    m_idx_y--;
-  }
-}
+auto pixel_iterator::dec_idx() -> void {}
+
+auto pixel_iterator::inc_x() -> void {}
+
+auto pixel_iterator::dec_x() -> void {}
+
+auto pixel_iterator::inc_y() -> void {}
+
+auto pixel_iterator::dec_y() -> void {}
 }  // namespace chip8

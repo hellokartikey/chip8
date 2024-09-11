@@ -40,7 +40,7 @@ class integer_iterator {
   }
 
   auto operator*() const -> bool {
-    return static_cast<bool>(*m_item & (1 << m_idx));
+    return static_cast<bool>(*m_item & (1 << (SIZE - m_idx - 1)));
   }
 
  private:

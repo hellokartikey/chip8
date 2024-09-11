@@ -80,6 +80,9 @@ class pixel_iterator {
   screen* m_screen;
   std::size_t m_idx_x;
   std::size_t m_idx_y;
+
+  std::size_t m_orig_x;
+  std::size_t m_orig_y;
 };
 }  // namespace chip8
 

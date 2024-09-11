@@ -133,7 +133,7 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
         case 0xe:
           return fmt::format("SHL {} (, {})", reg_x, reg_y);
         default:
-          return invalid_opcode(parsed.get_opcode());
+          return invalid_opcode(opcode);
       }
       break;
     case 0x9:
@@ -146,8 +146,15 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       return fmt::format("RND {}, {:02x}", reg_x, lo_byte);
     case 0xd:
       return fmt::format("DRW {}, {}, {}", reg_x, reg_y, parsed.get_nibble(0));
+    case 0xf:
+      switch (lo_byte) {
+        case 0x07:
+          return fmt::format("LD {}, DT", reg_x);
+        default:
+          invalid_opcode(opcode);
+      }
     default:
-      return invalid_opcode(parsed.get_opcode());
+      return invalid_opcode(opcode);
   }
 };
 
@@ -323,12 +330,21 @@ auto chip8::exec() -> void {
     case 0xd:
       drw(reg_x, reg_y, parsed.get_nibble(0));
       return;
+    case 0xf:
+      switch (lo_byte) {
+        case 0x07:
+          ld_dt(reg_x);
+          return;
+        default:
+          invalid(opcode);
+          return;
+      }
     default:
       invalid(opcode);
       return;
   }
 
-  invalid(parsed.get_opcode());
+  invalid(opcode);
 
   m_screen.draw_screen();
 }  // namespace chip8
@@ -752,12 +768,25 @@ auto chip8::drw(regs reg_x, regs reg_y, byte count) -> void {
   auto iter = m_screen.pixel_iter(idx_x, idx_y);
   auto addr = m_i;
 
+  get(regs::VF) = 0x00;
+
   while (count-- != 0) {
     auto data = read(addr++);
     for (auto i = begin(data); i != end(data); i++) {
-      *iter = (*i) ^ (*iter);
+      auto old_value = bool{*iter};
+      auto new_value = static_cast<bool>(*i ^ *iter);
+
+      if (old_value and not new_value) {
+        get(regs::VF) = 0x01;
+      }
+
+      *iter = new_value;
       iter++;
     }
   }
+}
+
+auto chip8::ld_dt(regs reg) -> void {
+  get(reg) = m_dt;
 }
 }  // namespace chip8

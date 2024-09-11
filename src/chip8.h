@@ -5,11 +5,22 @@
 
 #include "common.h"
 #include "instructions.h"
+#include "screen.h"
 #include "stack.h"
 
 namespace chip8 {
 class chip8 {
  public:
+  explicit chip8() = default;
+  explicit chip8(screen_tag_t /* unused */);
+  ~chip8() = default;
+
+  explicit chip8(const chip8&) = delete;
+  chip8(chip8&&) = delete;
+
+  auto operator=(const chip8&) -> chip8& = delete;
+  auto operator=(chip8&&) -> chip8& = delete;
+
   // Registers API
   auto get(regs reg) -> byte&;
   [[nodiscard]] auto get(regs reg) const -> byte;
@@ -84,6 +95,8 @@ class chip8 {
   auto debug_pop() -> void;
   auto debug_set_regs(std::stringstream& cmd) -> void;
   auto debug_random() -> void;
+  auto debug_screen(std::stringstream& cmd) -> void;
+  auto debug_pixel(std::stringstream& cmd) -> void;
 
   auto print_memory(word begin = 0x0000_w, word end = 0x1000_w) const -> void;
   auto print_registers() const -> void;
@@ -102,7 +115,7 @@ class chip8 {
   stack m_stack;
   memory m_memory{};
 
-  screen m_screen{};
+  screen m_screen;
 
   std::random_device random_device;
   std::uniform_int_distribution<byte> randomness;

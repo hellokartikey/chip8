@@ -12,6 +12,8 @@
 #include "parser.h"
 
 namespace chip8 {
+chip8::chip8(screen_tag_t /* unused */) : m_screen(with_screen) {}
+
 auto chip8::get(regs reg) -> byte& {
   return m_registers.at(std::to_underlying(reg));
 }
@@ -308,6 +310,8 @@ auto chip8::exec() -> void {
   }
 
   invalid(parsed.get_opcode());
+
+  m_screen.draw_screen();
 }  // namespace chip8
 
 auto chip8::exec_n(std::uint64_t count) -> void {
@@ -347,7 +351,7 @@ auto chip8::debug_shell() -> void {
       break;
     } else if (sub_command == "dasm") {
       debug_dasm(cmd);
-    } else if (sub_command == "scr") {
+    } else if (sub_command == "display") {
       debug_scr();
     } else if (sub_command == "help") {
       debug_help(cmd);
@@ -363,9 +367,19 @@ auto chip8::debug_shell() -> void {
       debug_set_regs(cmd);
     } else if (sub_command == "rnd") {
       debug_random();
+    } else if (sub_command == "screen") {
+      debug_screen(cmd);
+    } else if (sub_command == "clear") {
+      m_screen.clear();
+    } else if (sub_command == "full") {
+      m_screen.full();
+    } else if (sub_command == "pixel") {
+      debug_pixel(cmd);
     } else {
       fmt::print(std::cerr, "Invalid command...\n");
     }
+
+    m_screen.draw_screen();
   }
 
   fmt::print("exiting...\n");
@@ -478,8 +492,12 @@ auto chip8::debug_help(std::stringstream& cmd) -> void {
       "  stk                  Print the stack\n"
       "  push [addr]          Push an address to the stack\n"
       "  pop                  Pop an address from the stack\n"
-      "  scr                  Display screen state in terminal\n"
       "  rnd                  Generate a random byte\n"
+      "  display              Display screen state in terminal\n"
+      "  screen [on|off]      Turn on raylib powered screen\n"
+      "  clear                Clear all pixels on screen\n"
+      "  full                 Fill all pixels on screen\n"
+      "  pixel [x] [y]        Toggle pixel at (x, y)\n"
       "  exit                 Exit\n"
       "  help                 Print this menu\n");
 }
@@ -520,11 +538,11 @@ auto chip8::debug_scr() -> void {
   for (const auto& row : m_screen) {
     fmt::print("|");
 
-    for (const auto& pix : row.to_string()) {
-      if (pix == '0') {
-        fmt::print(" ");
-      } else {
+    for (auto col = 0; col < row.size(); col++) {
+      if (row[col]) {
         fmt::print("#");
+      } else {
+        fmt::print(" ");
       }
     }
 
@@ -537,6 +555,35 @@ auto chip8::debug_scr() -> void {
 
 auto chip8::debug_random() -> void { fmt::print("{:02x}\n", get_random()); }
 
+auto chip8::debug_screen(std::stringstream& cmd) -> void {
+  if (cmd.eof()) {
+    m_screen.init_raylib();
+  }
+
+  auto arg = std::string{};
+  cmd >> arg;
+
+  if (arg == "on") {
+    m_screen.init_raylib();
+  } else if (arg == "off") {
+    m_screen.close_raylib();
+  }
+}
+
+auto chip8::debug_pixel(std::stringstream& cmd) -> void {
+  if (cmd.eof()) {
+    fmt::print(stderr, "Invalid syntax");
+  }
+
+  auto idx_x = 0Z;
+  auto idx_y = 0Z;
+
+  cmd >> idx_x;
+  cmd >> idx_y;
+
+  m_screen[idx_x, idx_y] = ~m_screen[idx_x, idx_y];
+}
+
 auto chip8::sys(word addr) -> void {
   fmt::print(std::cerr, "SYS addr not implemented by this emulator\n");
 }
@@ -545,11 +592,7 @@ auto chip8::invalid(word opcode) -> void {
   fmt::print(stderr, "Unsupported opcode {:04x}\n", opcode);
 }
 
-auto chip8::cls() -> void {
-  for (auto& column : m_screen) {
-    column.reset();
-  }
-}
+auto chip8::cls() -> void { m_screen.clear(); }
 
 auto chip8::ret() -> void { m_pc = m_stack.pop(); }
 

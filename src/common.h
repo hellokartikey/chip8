@@ -148,10 +148,10 @@ constexpr auto reg_to_str(regs reg) -> std::string {
 constexpr auto MEMORY_SIZE = 0x1000z;
 using memory = std::array<byte, MEMORY_SIZE>;
 
-// Index using (x, y)
-constexpr auto SCREEN_WIDTH = 64Z;
-constexpr auto SCREEN_HEIGHT = 32Z;
-using screen = std::array<std::bitset<SCREEN_WIDTH>, SCREEN_HEIGHT>;
+struct screen_tag_t {
+  int x;
+};
+constexpr auto with_screen = screen_tag_t{.x = 0};
 }  // namespace chip8
 
 #endif

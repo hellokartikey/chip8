@@ -3,6 +3,7 @@ add_library(chip8++)
 target_link_libraries(
   chip8++
   fmt::fmt
+  raylib
 )
 
 target_sources(
@@ -10,12 +11,14 @@ target_sources(
 PRIVATE
   chip8.cpp
   parser.cpp
+  screen.cpp
 INTERFACE
   common.h
   chip8.h
   instructions.h
   parser.h
   stack.h
+  screen.h
 )
 
 add_executable(chip8)

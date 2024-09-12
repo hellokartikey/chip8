@@ -31,14 +31,14 @@ auto screen::draw_screen() const -> void {
 
   BeginDrawing();
 
-  ClearBackground(BLACK);
+  ClearBackground(BG_COLOR);
 
   for (const auto& row : m_screen) {
     pos_x = 0;
 
     for (auto col = 0; col < row.size(); col++) {
       if (row[col]) {
-        DrawRectangle(pos_x, pos_y, PIXEL, PIXEL, WHITE);
+        DrawRectangle(pos_x, pos_y, PIXEL, PIXEL, FG_COLOR);
       }
       pos_x += PIXEL;
     }
@@ -57,7 +57,7 @@ auto screen::init_raylib() -> void {
 
     BeginDrawing();
 
-    ClearBackground(BLACK);
+    ClearBackground(BG_COLOR);
 
     EndDrawing();
 
@@ -139,13 +139,13 @@ auto pixel_iterator::inc_idx() -> void {
   m_idx_y++;
 }
 
-auto pixel_iterator::dec_idx() -> void {}
+auto pixel_iterator::dec_idx() -> void {
+  if (m_idx_x == m_orig_x) {
+    m_idx_y--;
+    m_idx_x = m_orig_x + 8 - 1;
+    return;
+  }
 
-auto pixel_iterator::inc_x() -> void {}
-
-auto pixel_iterator::dec_x() -> void {}
-
-auto pixel_iterator::inc_y() -> void {}
-
-auto pixel_iterator::dec_y() -> void {}
+  m_idx_x--;
+}
 }  // namespace chip8

@@ -151,7 +151,7 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
         case 0x07:
           return fmt::format("LD {}, DT", reg_x);
         default:
-          invalid_opcode(opcode);
+          return invalid_opcode(opcode);
       }
     default:
       return invalid_opcode(opcode);
@@ -786,7 +786,5 @@ auto chip8::drw(regs reg_x, regs reg_y, byte count) -> void {
   }
 }
 
-auto chip8::ld_dt(regs reg) -> void {
-  get(reg) = m_dt;
-}
+auto chip8::ld_dt(regs reg) -> void { get(reg) = m_dt; }
 }  // namespace chip8

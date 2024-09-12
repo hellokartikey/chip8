@@ -5,6 +5,9 @@
 
 #include "common.h"
 
+#define BG_COLOR SKYBLUE
+#define FG_COLOR DARKPURPLE
+
 namespace chip8 {
 class pixel_iterator;
 
@@ -70,12 +73,6 @@ class pixel_iterator {
  private:
   auto inc_idx() -> void;
   auto dec_idx() -> void;
-
-  auto inc_x() -> void;
-  auto dec_x() -> void;
-
-  auto inc_y() -> void;
-  auto dec_y() -> void;
 
   screen* m_screen;
   std::size_t m_idx_x;

@@ -48,6 +48,31 @@ enum class regs : byte {
   INVALID = 0xff
 };
 
+enum class keys : byte {
+  KEY_0 = 0x00,
+  KEY_1 = 0x01,
+  KEY_2 = 0x02,
+  KEY_3 = 0x03,
+  KEY_4 = 0x04,
+  KEY_5 = 0x05,
+  KEY_6 = 0x06,
+  KEY_7 = 0x07,
+  KEY_8 = 0x08,
+  KEY_9 = 0x09,
+  KEY_A = 0x0a,
+  KEY_B = 0x0b,
+  KEY_C = 0x0c,
+  KEY_D = 0x0d,
+  KEY_E = 0x0e,
+  KEY_F = 0x0f,
+
+  NONE = 0xff,
+};
+
+constexpr auto from_key(keys key) { return std::to_underlying(key); }
+
+constexpr auto to_key(byte key) { return static_cast<keys>(key); }
+
 constexpr auto from_reg(regs reg) { return std::to_underlying(reg); }
 
 constexpr auto to_reg(byte reg) { return static_cast<regs>(reg & 0x000f); }

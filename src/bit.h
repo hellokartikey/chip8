@@ -1,6 +1,8 @@
 #ifndef HK_CHIP8_BIT_H
 #define HK_CHIP8_BIT_H
 
+#include <concepts>
+
 namespace chip8 {
 template <typename T>
 class integer_iterator {
@@ -50,12 +52,12 @@ class integer_iterator {
 
 using byte_iterator = integer_iterator<byte>;
 
-template <typename T>
+template <std::integral T>
 auto begin(T& value) -> integer_iterator<T> {
   return integer_iterator<byte>(value, 0);
 }
 
-template <typename T>
+template <std::integral T>
 auto end(T& value) -> integer_iterator<T> {
   return integer_iterator<byte>(value);
 }

@@ -560,7 +560,7 @@ auto chip8::debug_help(std::stringstream& cmd) -> void {
 }
 
 auto chip8::debug_dasm(std::stringstream& cmd) -> void {
-  auto begin = m_pc;
+  auto begin = this->m_pc;
 
   if (begin >= 0x0004) {
     begin -= 0x0004;

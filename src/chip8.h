@@ -6,6 +6,7 @@
 
 #include "common.h"
 #include "instructions.h"
+#include "keyboard.h"
 #include "screen.h"
 #include "stack.h"
 
@@ -115,6 +116,8 @@ class chip8 {
   registers m_registers{};
   word m_i{};
   byte m_r{};
+
+  keyboard m_keyboard;
 
   byte m_dt{};
   byte m_st{};

@@ -12,6 +12,8 @@ PRIVATE
   chip8.cpp
   parser.cpp
   screen.cpp
+  keyboard.cpp
+  cli.cpp
 INTERFACE
   common.h
   chip8.h
@@ -20,6 +22,8 @@ INTERFACE
   stack.h
   screen.h
   bit.h
+  keyboard.h
+  cli.h
 )
 
 add_executable(chip8)

@@ -52,7 +52,7 @@ class screen {
   auto pixel_iter(std::size_t idx_x, std::size_t idx_y) -> pixel_iterator;
 
  private:
-  inner_type m_screen;
+  inner_type m_screen{};
   bool m_is_init_raylib{false};
 };
 

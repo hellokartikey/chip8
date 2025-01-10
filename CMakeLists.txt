@@ -8,11 +8,14 @@ option(CLANG_FORMAT "Enable clang-format source code formatting" ON)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-include(fetchFmt)
-include(fetchRaylib)
+find_package(fmt REQUIRED)
+find_package(raylib REQUIRED)
+
+add_compile_options(-fsanitize=address)
+add_link_options(-fsanitize=address)
 
 if(BUILD_TESTS)
-  include(fetchGoogletest)
+  find_package(GTest REQUIRED)
 endif()
 
 include(setup)

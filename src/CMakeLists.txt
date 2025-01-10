@@ -30,7 +30,7 @@ add_executable(chip8)
 
 target_sources(
   chip8
-PRIVATE 
+PRIVATE
   main.cpp
 )
 

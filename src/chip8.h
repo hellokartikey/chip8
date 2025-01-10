@@ -38,6 +38,8 @@ class chip8 {
   [[nodiscard]] auto read16(word addr) const -> word;
   auto write16(word addr, word data) -> void;
 
+  [[nodiscard]] auto is_invalid() const -> bool;
+
  private:
   auto fetch() -> word;
 

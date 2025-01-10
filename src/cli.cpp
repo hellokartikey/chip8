@@ -13,3 +13,9 @@ auto cli_args::is_present(std::string_view key) -> bool {
 }
 
 auto cli_args::args() const -> const args_t& { return m_args; }
+
+auto cli_args::count() const -> std::size_t { return m_args.size(); }
+
+auto cli_args::operator[](std::size_t idx) const -> std::string_view {
+  return m_args[idx];
+}

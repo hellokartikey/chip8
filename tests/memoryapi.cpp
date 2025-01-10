@@ -1,14 +1,16 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <ranges>
 
 #include "fixture.h"
 
 using MemoryAPI = EmulatorFixture;
 
 TEST_F(MemoryAPI, DefaultInitialization) {
-  auto result = std::ranges::all_of(emulator.dump_memory(),
-                                    [](auto value) { return value == 0x00; });
+  auto result = std::ranges::all_of(
+      emulator.dump_memory() | std::views::drop(0x1ff),  // Drop the fonts
+      [](auto value) { return value == 0x00; });
   EXPECT_EQ(result, true);
 }
 

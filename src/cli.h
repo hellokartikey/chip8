@@ -13,6 +13,9 @@ class cli_args {
   auto is_present(std::string_view arg) -> bool;
 
   auto args() const -> const args_t&;
+  auto count() const -> std::size_t;
+
+  auto operator[](std::size_t idx) const -> std::string_view;
 
  private:
   args_t m_args;

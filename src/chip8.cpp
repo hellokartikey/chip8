@@ -217,6 +217,8 @@ auto chip8::write16(word addr, word data) -> void {
   write(addr + 1, lower);
 }
 
+auto chip8::is_invalid() const -> bool { return m_is_invalid_state; }
+
 auto chip8::fetch() -> word {
   auto opcode = read16(m_pc);
 
@@ -252,113 +254,114 @@ auto chip8::exec() -> void {
       switch (opcode) {
         case 0x00e0:
           cls();
-          return;
+          break;
         case 0x00ee:
           ret();
-          return;
+          break;
         default:
           sys(addr);
-          return;
+          break;
       }
       break;
     case 0x1:
       jp(addr);
-      return;
+      break;
     case 0x2:
       call(addr);
-      return;
+      break;
     case 0x3:
       se(reg_x, lo_byte);
-      return;
+      break;
     case 0x4:
       sne(reg_x, lo_byte);
-      return;
+      break;
     case 0x5:
       se(reg_x, reg_y);
-      return;
+      break;
     case 0x6:
       ld(reg_x, lo_byte);
-      return;
+      break;
     case 0x7:
       add(reg_x, lo_byte);
-      return;
+      break;
     case 0x8:
       switch (parsed.get_nibble(0)) {
         case 0x0:
           ld(reg_x, reg_y);
-          return;
+          break;
         case 0x1:
           or_(reg_x, reg_y);
-          return;
+          break;
         case 0x2:
           and_(reg_x, reg_y);
-          return;
+          break;
         case 0x3:
           xor_(reg_x, reg_y);
-          return;
+          break;
         case 0x4:
           add(reg_x, reg_y);
-          return;
+          break;
         case 0x05:
           sub(reg_x, reg_y);
-          return;
+          break;
         case 0x6:
           shr(reg_x);
-          return;
+          break;
         case 0x7:
           subn(reg_x, reg_y);
-          return;
+          break;
         case 0xe:
           shl(reg_x);
-          return;
+          break;
         default:
           invalid(opcode);
-          return;
+          break;
       }
     case 0x9:
       sne(reg_x, reg_y);
-      return;
+      break;
     case 0xa:
       ld_i(addr);
-      return;
+      break;
     case 0xb:
       jp_v0(addr);
-      return;
+      break;
     case 0xc:
       rnd(reg_x, lo_byte);
-      return;
+      break;
     case 0xd:
       drw(reg_x, reg_y, parsed.get_nibble(0));
-      return;
+      break;
     case 0xf:
       switch (lo_byte) {
         case 0x07:
           ld_dt(reg_x);
-          return;
+          break;
         default:
           invalid(opcode);
-          return;
+          break;
       }
+      break;
     default:
       invalid(opcode);
-      return;
+      break;
   }
 
-  invalid(opcode);
-
   m_screen.draw_screen();
-}  // namespace chip8
+}
 
 auto chip8::exec_n(std::uint64_t count) -> void {
-  for (; count > 0 and not m_is_invalid_state; count--) {
+  for (; count > 0 and not is_invalid(); count--) {
     exec();
   }
 }
 
 auto chip8::exec_all() -> void {
-  while (not m_is_invalid_state) {
+  while (not is_invalid()) {
     exec();
   }
+
+  debug_shell();
 }
 
 auto chip8::load_rom(const std::filesystem::path& file) -> void {

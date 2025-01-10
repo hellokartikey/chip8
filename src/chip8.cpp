@@ -1,6 +1,6 @@
 #include "chip8.h"
 
-#include <fmt/base.h>
+#include <fmt/core.h>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
 
@@ -560,7 +560,7 @@ auto chip8::debug_help(std::stringstream& cmd) -> void {
 }
 
 auto chip8::debug_dasm(std::stringstream& cmd) -> void {
-  auto begin = this->m_pc;
+  auto begin = m_pc;
 
   if (begin >= 0x0004) {
     begin -= 0x0004;

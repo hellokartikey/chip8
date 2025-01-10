@@ -1,23 +1,15 @@
 #include "cli.h"
 
-#include <fmt/base.h>
-#include <fmt/ranges.h>
-#include <fmt/std.h>
+cli_args::cli_args(int argc, char* argv[]) : m_args(argv, argv + argc) {}
 
-#include <algorithm>
+auto cli_args::is_present(std::string_view key) -> bool {
+  for (const auto& arg : args()) {
+    if (arg == key) {
+      return true;
+    }
+  }
 
-auto is_arg_present(const args_type& args, std::string_view arg) -> bool {
-  return std::ranges::contains(args, arg);
+  return false;
 }
 
-auto print_help(const args_type& args) -> void {
-  fmt::print(
-      "Usage: {} [OPTIONS]\n"
-      "\n"
-      "Options:\n"
-      "  -d, --debug        Interactive debug shell\n"
-      "  -r, --rom <ROM>    Load rom file\n"
-      "  -h, --help         Print help\n"
-      "  -v, --version      Print version\n",
-      args[0]);
-}
+auto cli_args::args() const -> const args_t& { return m_args; }

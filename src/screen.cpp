@@ -84,8 +84,8 @@ auto screen::begin() -> iterator { return m_screen.begin(); }
 
 auto screen::end() -> iterator { return m_screen.end(); }
 
-auto screen::pixel_iter(std::size_t idx_x,
-                        std::size_t idx_y) -> pixel_iterator {
+auto screen::pixel_iter(std::size_t idx_x, std::size_t idx_y)
+    -> pixel_iterator {
   return pixel_iterator(*this, idx_x, idx_y);
 }
 

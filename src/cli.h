@@ -4,10 +4,18 @@
 #include <string_view>
 #include <vector>
 
-using args_type = std::vector<std::string_view>;
+class cli_args {
+ public:
+  using args_t = std::vector<std::string_view>;
 
-auto is_arg_present(const args_type& args, std::string_view arg) -> bool;
+  cli_args(int argc, char* argv[]);
 
-auto print_help(const args_type& args) -> void;
+  auto is_present(std::string_view arg) -> bool;
+
+  auto args() const -> const args_t&;
+
+ private:
+  args_t m_args;
+};
 
 #endif

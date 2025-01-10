@@ -150,6 +150,10 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       switch (lo_byte) {
         case 0x07:
           return fmt::format("LD {}, DT", reg_x);
+        case 0x55:
+          return fmt::format("LD [I], Vx");
+        case 0x65:
+          return fmt::format("LD Vx, [I]");
         default:
           return invalid_opcode(opcode);
       }
@@ -336,6 +340,12 @@ auto chip8::exec() -> void {
       switch (lo_byte) {
         case 0x07:
           ld_dt(reg_x);
+          break;
+        case 0x55:
+          st_regs();
+          break;
+        case 0x65:
+          ld_regs();
           break;
         default:
           invalid(opcode);
@@ -790,4 +800,44 @@ auto chip8::drw(regs reg_x, regs reg_y, byte count) -> void {
 }
 
 auto chip8::ld_dt(regs reg) -> void { get(reg) = m_dt; }
+
+auto chip8::st_regs() -> void {
+  auto addr = m_i;
+  write(addr++, get(regs::V0));
+  write(addr++, get(regs::V1));
+  write(addr++, get(regs::V2));
+  write(addr++, get(regs::V3));
+  write(addr++, get(regs::V4));
+  write(addr++, get(regs::V5));
+  write(addr++, get(regs::V6));
+  write(addr++, get(regs::V7));
+  write(addr++, get(regs::V8));
+  write(addr++, get(regs::V9));
+  write(addr++, get(regs::VA));
+  write(addr++, get(regs::VB));
+  write(addr++, get(regs::VC));
+  write(addr++, get(regs::VD));
+  write(addr++, get(regs::VE));
+  write(addr++, get(regs::VF));
+}
+
+auto chip8::ld_regs() -> void {
+  auto addr = m_i;
+  get(regs::V0) = read(addr++);
+  get(regs::V1) = read(addr++);
+  get(regs::V2) = read(addr++);
+  get(regs::V3) = read(addr++);
+  get(regs::V4) = read(addr++);
+  get(regs::V5) = read(addr++);
+  get(regs::V6) = read(addr++);
+  get(regs::V7) = read(addr++);
+  get(regs::V8) = read(addr++);
+  get(regs::V9) = read(addr++);
+  get(regs::VA) = read(addr++);
+  get(regs::VB) = read(addr++);
+  get(regs::VC) = read(addr++);
+  get(regs::VD) = read(addr++);
+  get(regs::VE) = read(addr++);
+  get(regs::VF) = read(addr++);
+}
 }  // namespace chip8

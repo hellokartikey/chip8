@@ -87,6 +87,8 @@ class chip8 {
   auto rnd(regs reg, byte value) -> void;
   auto drw(regs reg_x, regs reg_y, byte count) -> void;
   auto ld_dt(regs reg) -> void;
+  auto st_regs() -> void;
+  auto ld_regs() -> void;
 
   auto invalid(word opcode) -> void;
 

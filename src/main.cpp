@@ -14,18 +14,23 @@ auto main(int argc, char* argv[]) -> int {
 
   fmt::print("chip8 emulator by hellokartikey!\n");
 
+  if (not args.is_valid()) {
+    fmt::print(stderr, "Invalid usage.\n");
+    args.help();
+    return 2;
+  }
+
   auto interpreter = chip8::chip8{chip8::with_screen};
 
-  if (args.is_present("--debug")) {
+  if (args.has_rom()) {
+    interpreter.load_rom(args.rom());
+  }
+
+  if (args.is_debug()) {
     interpreter.debug_shell();
   }
 
-  if (args.count() == 2) {
-    interpreter.load_rom(args[1]);
-    interpreter.exec_all();
-  } else {
-    fmt::print(stderr, "ROM not provided...\n");
-  }
+  interpreter.exec_all();
 
   return 0;
 }

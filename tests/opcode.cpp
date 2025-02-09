@@ -256,3 +256,5 @@ TEST(Opcode, RND) {
   EXPECT_EQ(op::RND(regs::VC, 0x96), 0xcc96);
   EXPECT_EQ(op::RND(regs::VF, 0xab), 0xcfab);
 }
+
+// TODO - Add tests from DRW onwards

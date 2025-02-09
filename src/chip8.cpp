@@ -150,6 +150,8 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       switch (lo_byte) {
         case 0x07:
           return fmt::format("LD {}, DT", reg_x);
+        case 0x33:
+          return fmt::format("LD B, {}", reg_x);
         case 0x55:
           return fmt::format("LD [I], Vx");
         case 0x65:
@@ -340,6 +342,9 @@ auto chip8::exec() -> void {
       switch (lo_byte) {
         case 0x07:
           ld_dt(reg_x);
+          break;
+        case 0x33:
+          bcd(reg_x);
           break;
         case 0x55:
           st_regs();
@@ -800,6 +805,23 @@ auto chip8::drw(regs reg_x, regs reg_y, byte count) -> void {
 }
 
 auto chip8::ld_dt(regs reg) -> void { get(reg) = m_dt; }
+
+auto chip8::bcd(regs reg) -> void {
+  auto data = get(reg);
+
+  auto one = data % 10;
+
+  data /= 10;
+  auto ten = data % 10;
+
+  data /= 10;
+  auto hun = data % 10;
+
+  auto addr = m_i;
+  write(addr++, hun);
+  write(addr++, ten);
+  write(addr++, one);
+}
 
 auto chip8::st_regs() -> void {
   auto addr = m_i;

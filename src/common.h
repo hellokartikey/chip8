@@ -6,7 +6,15 @@
 #include <string>
 #include <utility>
 
+#define BG_COLOR SKYBLUE
+#define FG_COLOR DARKPURPLE
+
 namespace chip8 {
+constexpr auto WIDTH = 64Z;
+constexpr auto HEIGHT = 32Z;
+
+constexpr auto PIXEL = 10;
+
 using byte = std::uint8_t;
 using word = std::uint16_t;
 

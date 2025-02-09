@@ -15,7 +15,7 @@ class chip8 {
  public:
   explicit chip8();
   explicit chip8(screen_tag_t /* unused */);
-  ~chip8() = default;
+  ~chip8();
 
   explicit chip8(const chip8&) = delete;
   chip8(chip8&&) = delete;
@@ -42,6 +42,10 @@ class chip8 {
 
  private:
   auto fetch() -> word;
+
+  auto init_raylib() -> void;
+  auto close_raylib() -> void;
+  [[nodiscard]] auto is_raylib() const -> bool;
 
  public:
   // Program API
@@ -136,6 +140,8 @@ class chip8 {
   memory m_memory{};
 
   screen m_screen;
+
+  bool m_raylib;
 
   std::random_device random_device;
   std::uniform_int_distribution<byte> randomness;

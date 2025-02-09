@@ -5,10 +5,6 @@
 #include "common.h"
 
 namespace chip8 {
-screen::screen(screen_tag_t /* unused */) { init_raylib(); }
-
-screen::~screen() { close_raylib(); }
-
 auto screen::clear() -> void {
   for (auto& row : m_screen) {
     row.reset();
@@ -22,10 +18,6 @@ auto screen::full() -> void {
 }
 
 auto screen::draw_screen() const -> void {
-  if (not m_is_init_raylib) {
-    return;
-  }
-
   int pos_x = 0;
   int pos_y = 0;
 
@@ -48,30 +40,6 @@ auto screen::draw_screen() const -> void {
   EndDrawing();
 }
 
-auto screen::is_init_raylib() const -> bool { return m_is_init_raylib; }
-
-auto screen::init_raylib() -> void {
-  if (not m_is_init_raylib) {
-    SetTraceLogLevel(LOG_ERROR);
-    InitWindow(WIDTH * PIXEL, HEIGHT * PIXEL, "hellokartikey - CHIP8 Emulator");
-
-    BeginDrawing();
-
-    ClearBackground(BG_COLOR);
-
-    EndDrawing();
-
-    m_is_init_raylib = true;
-  }
-}
-
-auto screen::close_raylib() -> void {
-  if (m_is_init_raylib) {
-    CloseWindow();
-    m_is_init_raylib = false;
-  }
-}
-
 auto screen::operator[](std::size_t idx_x, std::size_t idx_y) const -> bool {
   return m_screen.at(idx_y).test(idx_x);
 }
@@ -92,8 +60,8 @@ auto screen::pixel_iter(std::size_t idx_x, std::size_t idx_y)
 pixel_iterator::pixel_iterator(screen& p_screen, std::size_t pix_x,
                                std::size_t pix_y)
     : m_screen(&p_screen),
-      m_idx_x(pix_x % screen::WIDTH),
-      m_idx_y(pix_y % screen::HEIGHT),
+      m_idx_x(pix_x % WIDTH),
+      m_idx_y(pix_y % HEIGHT),
       m_orig_x(m_idx_x),
       m_orig_y(m_idx_y) {}
 

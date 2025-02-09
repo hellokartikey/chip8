@@ -5,27 +5,18 @@
 
 #include "common.h"
 
-#define BG_COLOR SKYBLUE
-#define FG_COLOR DARKPURPLE
-
 namespace chip8 {
 class pixel_iterator;
 
 class screen {
  public:
-  static constexpr auto WIDTH = 64Z;
-  static constexpr auto HEIGHT = 32Z;
-
-  static constexpr auto PIXEL = 10;
-
   using row_type = std::bitset<WIDTH>;
   using inner_type = std::array<row_type, HEIGHT>;
   using iterator = inner_type::iterator;
   using reference = row_type::reference;
 
   explicit screen() = default;
-  explicit screen(screen_tag_t /* unused */);
-  ~screen();
+  ~screen() = default;
 
   screen(const screen&) = default;
   screen(screen&&) = default;
@@ -37,10 +28,6 @@ class screen {
   auto full() -> void;
 
   auto draw_screen() const -> void;
-
-  [[nodiscard]] auto is_init_raylib() const -> bool;
-  auto init_raylib() -> void;
-  auto close_raylib() -> void;
 
   // Index using (x, y)
   auto operator[](std::size_t idx_x, std::size_t idx_y) const -> bool;

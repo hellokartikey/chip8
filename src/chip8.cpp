@@ -3,6 +3,7 @@
 #include <fmt/core.h>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
+#include <raylib.h>
 
 #include <algorithm>
 #include <fstream>
@@ -26,7 +27,9 @@ chip8::chip8() {
   }
 }
 
-chip8::chip8(screen_tag_t /* unused */) : chip8() { m_screen.init_raylib(); }
+chip8::chip8(screen_tag_t /* unused */) : chip8() { init_raylib(); }
+
+chip8::~chip8() { close_raylib(); }
 
 auto chip8::get(regs reg) -> byte& {
   return m_registers.at(std::to_underlying(reg));
@@ -234,6 +237,30 @@ auto chip8::fetch() -> word {
   return opcode;
 }
 
+auto chip8::init_raylib() -> void {
+  if (not is_raylib()) {
+    SetTraceLogLevel(LOG_ERROR);
+    InitWindow(WIDTH * PIXEL, HEIGHT * PIXEL, "hellokartikey - CHIP8 Emulator");
+
+    BeginDrawing();
+
+    ClearBackground(BG_COLOR);
+
+    EndDrawing();
+
+    m_raylib = true;
+  }
+}
+
+auto chip8::close_raylib() -> void {
+  if (is_raylib()) {
+    CloseWindow();
+    m_raylib = false;
+  }
+}
+
+auto chip8::is_raylib() const -> bool { return m_raylib; }
+
 auto chip8::start_addr() const -> word { return m_start_addr; }
 
 auto chip8::load_program(opcode::instructions program) -> void {
@@ -362,7 +389,9 @@ auto chip8::exec() -> void {
       break;
   }
 
-  m_screen.draw_screen();
+  if (is_raylib()) {
+    m_screen.draw_screen();
+  }
 }
 
 auto chip8::exec_n(std::uint64_t count) -> void {
@@ -374,6 +403,12 @@ auto chip8::exec_n(std::uint64_t count) -> void {
 auto chip8::exec_all() -> void {
   while (not is_invalid()) {
     exec();
+
+    if (is_raylib()) {
+      if (WindowShouldClose()) {
+        return;
+      }
+    }
   }
 
   debug_shell();
@@ -632,16 +667,16 @@ auto chip8::debug_random() -> void { fmt::print("{:02x}\n", get_random()); }
 
 auto chip8::debug_screen(std::stringstream& cmd) -> void {
   if (cmd.eof()) {
-    m_screen.init_raylib();
+    init_raylib();
   }
 
   auto arg = std::string{};
   cmd >> arg;
 
   if (arg == "on") {
-    m_screen.init_raylib();
+    init_raylib();
   } else if (arg == "off") {
-    m_screen.close_raylib();
+    close_raylib();
   }
 }
 
@@ -656,7 +691,7 @@ auto chip8::debug_pixel(std::stringstream& cmd) -> void {
   cmd >> idx_x;
   cmd >> idx_y;
 
-  if (idx_x < screen::WIDTH and idx_y < screen::HEIGHT) {
+  if (idx_x < WIDTH and idx_y < HEIGHT) {
     m_screen[idx_x, idx_y] = ~m_screen[idx_x, idx_y];
   }
 }

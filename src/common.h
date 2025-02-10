@@ -1,8 +1,11 @@
 #ifndef HK_CHIP8_COMMON_H
 #define HK_CHIP8_COMMON_H
 
+#include <raylib.h>
+
 #include <array>
 #include <cstdint>
+#include <map>
 #include <string>
 #include <utility>
 
@@ -79,6 +82,30 @@ enum class keys : byte {
 
   NONE = 0xff,
 };
+
+inline const std::map<int, keys> KEYBOARD_MAP{// Row 1
+                                              {KEY_ONE, keys::KEY_1},
+                                              {KEY_TWO, keys::KEY_2},
+                                              {KEY_THREE, keys::KEY_3},
+                                              {KEY_FOUR, keys::KEY_C},
+
+                                              // Row 2
+                                              {KEY_Q, keys::KEY_4},
+                                              {KEY_W, keys::KEY_5},
+                                              {KEY_E, keys::KEY_6},
+                                              {KEY_R, keys::KEY_D},
+
+                                              // Row 3
+                                              {KEY_A, keys::KEY_7},
+                                              {KEY_S, keys::KEY_8},
+                                              {KEY_D, keys::KEY_9},
+                                              {KEY_F, keys::KEY_E},
+
+                                              // Row 4
+                                              {KEY_Z, keys::KEY_A},
+                                              {KEY_X, keys::KEY_0},
+                                              {KEY_C, keys::KEY_B},
+                                              {KEY_V, keys::KEY_F}};
 
 constexpr auto from_key(keys key) { return std::to_underlying(key); }
 

@@ -114,6 +114,7 @@ class chip8 {
   auto debug_screen(std::stringstream& cmd) -> void;
   auto debug_pixel(std::stringstream& cmd) -> void;
   auto debug_rom(std::stringstream& cmd) -> void;
+  auto debug_press(std::stringstream& cmd) -> void;
 
   auto print_memory(word begin = 0x0000_w, word end = 0x1000_w) const -> void;
   auto print_registers() const -> void;

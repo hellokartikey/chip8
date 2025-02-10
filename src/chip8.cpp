@@ -154,6 +154,7 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       return fmt::format("RND {}, {:02x}", reg_x, lo_byte);
     case 0xd:
       return fmt::format("DRW {}, {}, {}", reg_x, reg_y, parsed.get_nibble(0));
+    // TODO - SKP Vx and SKNP Vx
     case 0xf:
       switch (lo_byte) {
         case 0x07:
@@ -413,6 +414,8 @@ auto chip8::exec_all() -> void {
       if (WindowShouldClose()) {
         return;
       }
+
+      m_keyboard.check();
     }
   }
 
@@ -420,6 +423,7 @@ auto chip8::exec_all() -> void {
 }
 
 auto chip8::load_rom(const std::filesystem::path& file) -> void {
+  // TODO - Use a better way to handle without <fstream>
   if (not std::filesystem::is_regular_file(file)) {
     fmt::print(stderr, "Invalid rom file path\n");
     return;

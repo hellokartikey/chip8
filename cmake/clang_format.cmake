@@ -2,11 +2,11 @@ find_program(CLANG_FORMAT_EXE NAMES clang-format REQUIRED)
 
 set(
   CLANG_FORMAT_HEADER_FILE_EXTENSIONS
-  h hpp hxx hh h++ h# H HPP HXX hhc hpf inc
+  h hpp hxx hh h++ h\# H HPP HXX hhc hpf inc
 )
 
 foreach(EXTENSION
-    IN 
+    IN
     LISTS
       CMAKE_CXX_SOURCE_FILE_EXTENSIONS
       CMAKE_C_SOURCE_FILE_EXTENSIONS

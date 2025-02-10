@@ -25,12 +25,12 @@ constexpr auto CALL(word addr) -> word { return 0x2000 | address(addr); }
 
 // Skip next instruction if reg == value
 constexpr auto SE(regs reg, byte value) -> word {
-  return 0x3000 | (from_reg(reg) << 8) | static_cast<word>(value);
+  return 0x3000 | (from_reg(reg) << 8) | as<word>(value);
 }
 
 // Skip next instruction if reg != value
 constexpr auto SNE(regs reg, byte value) -> word {
-  return 0x4000 | (from_reg(reg) << 8) | static_cast<word>(value);
+  return 0x4000 | (from_reg(reg) << 8) | as<word>(value);
 }
 
 // Skip next instruction if reg1 == reg2
@@ -40,12 +40,12 @@ constexpr auto SE(regs reg1, regs reg2) -> word {
 
 // Set reg = value
 constexpr auto LD(regs reg, byte value) -> word {
-  return 0x6000 | (from_reg(reg) << 8) | static_cast<word>(value);
+  return 0x6000 | (from_reg(reg) << 8) | as<word>(value);
 }
 
 // Set reg = reg + value
 constexpr auto ADD(regs reg, byte value) -> word {
-  return 0x7000 | (from_reg(reg) << 8) | static_cast<word>(value);
+  return 0x7000 | (from_reg(reg) << 8) | as<word>(value);
 }
 
 // Set dst = src

@@ -1,7 +1,10 @@
 #ifndef HK_CHIP8_BIT_H
 #define HK_CHIP8_BIT_H
 
+#include <algorithm>
 #include <concepts>
+
+#include "common.h"
 
 namespace chip8 {
 template <typename T>
@@ -28,9 +31,7 @@ class integer_iterator {
   auto operator--() -> integer_iterator& {
     m_idx--;
 
-    if (m_idx > SIZE) {
-      m_idx = SIZE;
-    }
+    m_idx = std::min(m_idx, SIZE);
 
     return *this;
   }
@@ -42,7 +43,7 @@ class integer_iterator {
   }
 
   auto operator*() const -> bool {
-    return static_cast<bool>(*m_item & (1 << (SIZE - m_idx - 1)));
+    return as<bool>(*m_item & (1 << (SIZE - m_idx - 1)));
   }
 
  private:

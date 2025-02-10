@@ -141,7 +141,7 @@ class chip8 {
 
   screen m_screen;
 
-  bool m_raylib;
+  bool m_raylib{};
 
   std::random_device random_device;
   std::uniform_int_distribution<byte> randomness;

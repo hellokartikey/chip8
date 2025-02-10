@@ -1,5 +1,9 @@
 #include "parser.h"
 
+#include <cstddef>
+
+#include "common.h"
+
 namespace chip8 {
 parsed_instruction::parsed_instruction(word opcode) : m_opcode(opcode) {}
 
@@ -15,23 +19,23 @@ auto parsed_instruction::get_byte(std::size_t index) const -> byte {
 }
 
 auto parsed_instruction::get_lo_byte() const -> byte {
-  return static_cast<byte>(m_opcode & 0x00ff);
+  return as<byte>(m_opcode & 0x00ff);
 }
 
 auto parsed_instruction::get_hi_byte() const -> byte {
-  return static_cast<byte>((m_opcode & 0xff00) >> 8);
+  return as<byte>((m_opcode & 0xff00) >> 8);
 }
 
 auto parsed_instruction::get_nibble(std::size_t index) const -> byte {
   switch (index) {
     case 0:
-      return static_cast<byte>(m_opcode & 0x000f);
+      return as<byte>(m_opcode & 0x000f);
     case 1:
-      return static_cast<byte>((m_opcode & 0x00f0) >> 4);
+      return as<byte>((m_opcode & 0x00f0) >> 4);
     case 2:
-      return static_cast<byte>((m_opcode & 0x0f00) >> 8);
+      return as<byte>((m_opcode & 0x0f00) >> 8);
     case 3:
-      return static_cast<byte>((m_opcode & 0xf000) >> 12);
+      return as<byte>((m_opcode & 0xf000) >> 12);
     default:
       return 0x00;
   }

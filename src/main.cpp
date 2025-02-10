@@ -1,13 +1,8 @@
-#include <fmt/core.h>
+#include <fmt/base.h>
 
 #include "chip8.h"
 #include "cli.h"
-#include "screen.h"
-
-namespace op = chip8::opcode;
-using chip8::regs;
-
-using namespace std::literals;
+#include "common.h"
 
 auto main(int argc, char* argv[]) -> int {
   auto args = cli_args(argc, argv);
@@ -28,9 +23,9 @@ auto main(int argc, char* argv[]) -> int {
 
   if (args.is_debug()) {
     interpreter.debug_shell();
+  } else {
+    interpreter.exec_all();
   }
-
-  interpreter.exec_all();
 
   return 0;
 }

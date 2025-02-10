@@ -1,19 +1,24 @@
 #include "chip8.h"
 
-#include <fmt/core.h>
+#include <fmt/base.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <fmt/ranges.h>
 #include <raylib.h>
 
 #include <algorithm>
+#include <cstdint>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "bit.h"
 #include "common.h"
+#include "instructions.h"
 #include "parser.h"
 #include "screen.h"
 
@@ -53,7 +58,7 @@ auto chip8::print_memory(word begin, word end) const -> void {
   auto start = begin & 0xfff0;
   for (auto addr = start; addr < end; addr++) {
     if ((addr & 0x000f) == 0x0000) {
-      fmt::print("\n {:02x}0  ", static_cast<word>(addr >> 4));
+      fmt::print("\n {:02x}0  ", as<word>(addr >> 4));
     }
 
     if (addr < begin) {
@@ -208,8 +213,8 @@ auto chip8::read16(word addr) const -> word {
     return 0x00;
   }
 
-  auto upper = static_cast<word>(read(addr) << 8);
-  auto lower = static_cast<word>(read(addr + 1));
+  auto upper = as<word>(read(addr) << 8);
+  auto lower = as<word>(read(addr + 1));
 
   return upper | lower;
 }
@@ -219,8 +224,8 @@ auto chip8::write16(word addr, word data) -> void {
     return;
   }
 
-  auto upper = static_cast<byte>(data >> 8);
-  auto lower = static_cast<byte>(data & 0x00ff);
+  auto upper = as<byte>(data >> 8);
+  auto lower = as<byte>(data & 0x00ff);
 
   write(addr, upper);
   write(addr + 1, lower);
@@ -422,8 +427,6 @@ auto chip8::load_rom(const std::filesystem::path& file) -> void {
 
   std::ifstream rom{file, std::ios::binary | std::ios::ate};
 
-  auto data = 0x00_b;
-
   auto end = rom.tellg();
   auto rom_data = std::vector<byte>(end);
 
@@ -590,7 +593,7 @@ auto chip8::debug_mem(std::stringstream& cmd) -> void {
   print_memory(address(begin), address(end));
 }
 
-auto chip8::debug_help(std::stringstream& cmd) -> void {
+auto chip8::debug_help(std::stringstream& /*cmd*/) -> void {
   fmt::print(
       "Available commands\n"
       "  regs                 Print all registers\n"
@@ -707,7 +710,7 @@ auto chip8::debug_rom(std::stringstream& cmd) -> void {
   load_rom(file);
 }
 
-auto chip8::sys(word addr) -> void {
+auto chip8::sys(word /*addr*/) -> void {
   fmt::print(std::cerr, "SYS addr not implemented by this emulator\n");
 }
 
@@ -752,7 +755,7 @@ auto chip8::add(regs reg, byte value) -> void { get(reg) += value; }
 auto chip8::add(regs dst, regs src) -> void {
   auto res = get(dst) + get(src);
   get(regs::VF) = res > 255 ? 0x01 : 0x00;
-  get(dst) = static_cast<byte>(res);
+  get(dst) = as<byte>(res);
 }
 
 auto chip8::ld(regs dst, regs src) -> void { get(dst) = get(src); }
@@ -827,7 +830,7 @@ auto chip8::drw(regs reg_x, regs reg_y, byte count) -> void {
     auto data = read(addr++);
     for (auto i = begin(data); i != end(data); i++) {
       auto old_value = bool{*iter};
-      auto new_value = static_cast<bool>(*i ^ *iter);
+      auto new_value = as<bool>(*i ^ *iter);
 
       if (old_value and not new_value) {
         get(regs::VF) = 0x01;

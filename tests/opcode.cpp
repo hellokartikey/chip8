@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "common.h"
 #include "instructions.h"
 
 namespace op = chip8::opcode;

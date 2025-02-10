@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "common.h"
 #include "fixture.h"
 
 using RegisterAPI = EmulatorFixture;

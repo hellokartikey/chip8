@@ -39,3 +39,5 @@ target_link_libraries(
   fmt::fmt
   chip8++
 )
+
+install(TARGETS chip8)

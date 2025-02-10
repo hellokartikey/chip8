@@ -2,6 +2,8 @@
 
 #include <raylib.h>
 
+#include <cstddef>
+
 #include "common.h"
 
 namespace chip8 {

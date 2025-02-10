@@ -18,17 +18,20 @@ constexpr auto PIXEL = 10;
 using byte = std::uint8_t;
 using word = std::uint16_t;
 
+template <typename To, typename From>
+auto as(const From& from) {
+  return static_cast<To>(from);
+}
+
 constexpr auto operator""_w(unsigned long long int value) -> word {
-  return static_cast<word>(value);
+  return as<word>(value);
 }
 
 constexpr auto operator""_b(unsigned long long int value) -> byte {
-  return static_cast<byte>(value);
+  return as<byte>(value);
 }
 
-constexpr auto address(word addr) -> word {
-  return static_cast<word>(addr & 0x0fff);
-}
+constexpr auto address(word addr) -> word { return as<word>(addr & 0x0fff); }
 
 using registers = std::array<byte, 0x10>;
 
@@ -79,11 +82,11 @@ enum class keys : byte {
 
 constexpr auto from_key(keys key) { return std::to_underlying(key); }
 
-constexpr auto to_key(byte key) { return static_cast<keys>(key); }
+constexpr auto to_key(byte key) { return as<keys>(key); }
 
 constexpr auto from_reg(regs reg) { return std::to_underlying(reg); }
 
-constexpr auto to_reg(byte reg) { return static_cast<regs>(reg & 0x000f); }
+constexpr auto to_reg(byte reg) { return as<regs>(reg & 0x000f); }
 
 constexpr auto str_to_reg(const std::string& str) -> regs {
   auto reg = regs::INVALID;

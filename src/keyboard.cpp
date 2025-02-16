@@ -2,17 +2,24 @@
 
 #include <raylib.h>
 
+#include <optional>
+
 #include "common.h"
 
 namespace chip8 {
 auto keyboard::is_pressed(keys key) const -> bool {
-  if (key == keys::NONE) {
-    return m_key != key;
+  if (m_key) {
+    return *m_key == key;
   }
-  return m_key == key;
+
+  return false;
 }
 
+auto keyboard::is_pressed() const -> bool { return m_key.has_value(); }
+
 auto keyboard::press(keys key) -> void { m_key = key; }
+
+auto keyboard::clear() -> void { m_key = std::nullopt; }
 
 auto keyboard::check() -> void {
   for (const auto& [key, value] : KEYBOARD_MAP) {
@@ -22,8 +29,8 @@ auto keyboard::check() -> void {
     }
   }
 
-  press(keys::NONE);
+  clear();
 }
 
-auto keyboard::key() const -> keys { return m_key; }
+auto keyboard::key() const -> std::optional<keys> { return m_key; }
 }  // namespace chip8

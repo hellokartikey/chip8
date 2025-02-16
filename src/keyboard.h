@@ -1,20 +1,25 @@
 #ifndef HK_CHIP8_KEYBOARD_H
 #define HK_CHIP8_KEYBOARD_H
 
+#include <optional>
+
 #include "common.h"
 
 namespace chip8 {
 class keyboard {
  public:
-  [[nodiscard]] auto is_pressed(keys key = keys::NONE) const -> bool;
-  auto press(keys key) -> void;
+  [[nodiscard]] auto is_pressed(keys key) const -> bool;
+  [[nodiscard]] auto is_pressed() const -> bool;
 
-  [[nodiscard]] auto key() const -> keys;
+  auto press(keys key) -> void;
+  auto clear() -> void;
+
+  [[nodiscard]] auto key() const -> std::optional<keys>;
 
   auto check() -> void;
 
  private:
-  keys m_key{keys::NONE};
+  std::optional<keys> m_key;
 };
 }  // namespace chip8
 

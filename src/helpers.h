@@ -25,9 +25,10 @@ template <typename To, typename From>
   requires std::is_enum_v<To> && std::is_same_v<From, std::string>
 constexpr auto as(const From& str) -> To {
   if (auto string = magic_enum::enum_cast<To>(str); string.has_value()) {
-    return magic_enum::enum_cast<To>(str).value();
+    return string.value();
   }
 
+  // TODO - Remove this ugly behavior
   return static_cast<To>(
       std::numeric_limits<std::underlying_type_t<To>>::max());
 }

@@ -5,7 +5,6 @@
 
 #include <array>
 #include <cstdint>
-#include <limits>
 #include <map>
 
 #include "helpers.h"
@@ -59,7 +58,6 @@ enum class regs : byte {
   INVALID = 0xff
 };
 
-// TODO - Remove NONE enum in favor of std::optional<keys>
 enum class keys : byte {
   KEY_0 = 0x00,
   KEY_1 = 0x01,
@@ -77,8 +75,6 @@ enum class keys : byte {
   KEY_D = 0x0d,
   KEY_E = 0x0e,
   KEY_F = 0x0f,
-
-  NONE = std::numeric_limits<byte>::max()
 };
 
 inline const std::map<int, keys> KEYBOARD_MAP{// Row 1

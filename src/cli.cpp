@@ -31,9 +31,10 @@ auto cli_args::help() const -> void {
   fmt::print(stderr, "Usage:\n\t{} [--debug] <ROM>\n", (*this)[0]);
 }
 
-auto cli_args::has_rom() const -> bool { return count() == 2; }
+auto cli_args::has_rom() const -> bool { return count() > 2; }
 
 auto cli_args::rom() const -> std::string_view {
+  // TODO - Make rom arg position independent
   if (has_rom()) {
     return (*this)[1];
   }

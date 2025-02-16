@@ -94,6 +94,8 @@ class chip8 {
   auto bcd(regs reg) -> void;
   auto st_regs() -> void;
   auto ld_regs() -> void;
+  auto skp(regs reg) -> void;
+  auto sknp(regs reg) -> void;
 
   auto invalid(word opcode) -> void;
 

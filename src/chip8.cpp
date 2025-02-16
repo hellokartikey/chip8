@@ -162,6 +162,15 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
     case 0xd:
       return fmt::format("DRW {}, {}, {}", reg_x, reg_y, parsed.get_nibble(0));
     // TODO - SKP Vx and SKNP Vx
+    case 0xe:
+      switch (lo_byte) {
+        case 0x9e:
+          return fmt::format("SKP {}", reg_x);
+        case 0xa1:
+          return fmt::format("SKNP {}", reg_x);
+        default:
+          return invalid_opcode(opcode);
+      }
     case 0xf:
       switch (lo_byte) {
         case 0x07:
@@ -378,6 +387,17 @@ auto chip8::exec() -> void {
     case 0xd:
       drw(reg_x, reg_y, parsed.get_nibble(0));
       break;
+    case 0xe:
+      switch (lo_byte) {
+        case 0x9e:
+          skp(reg_x);
+          break;
+        case 0xa1:
+          sknp(reg_x);
+          break;
+        default:
+          invalid(opcode);
+      }
     case 0xf:
       switch (lo_byte) {
         case 0x07:
@@ -938,4 +958,21 @@ auto chip8::ld_regs() -> void {
   get(regs::VE) = read(addr++);
   get(regs::VF) = read(addr++);
 }
+
+auto chip8::skp(regs reg) -> void {
+  if (auto key = m_keyboard.key(); key) {
+    if (std::to_underlying(reg) == std::to_underlying(*key)) {
+      m_pc += 2;
+    }
+  }
+}
+
+auto chip8::sknp(regs reg) -> void {
+  if (auto key = m_keyboard.key(); key) {
+    if (std::to_underlying(reg) != std::to_underlying(*key)) {
+      m_pc += 2;
+    }
+  }
+}
+
 }  // namespace chip8

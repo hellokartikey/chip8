@@ -259,3 +259,25 @@ TEST(Opcode, RND) {
 }
 
 // TODO - Add tests from DRW onwards
+TEST(Opcode, DRW) {
+  EXPECT_EQ(op::DRW(regs::VF, regs::V0, 0x4), 0xdf04);
+  EXPECT_EQ(op::DRW(regs::VA, regs::VB, 0x7), 0xdab7);
+  EXPECT_EQ(op::DRW(regs::V8, regs::V3, 0xa), 0xd83a);
+  EXPECT_EQ(op::DRW(regs::V7, regs::V2, 0xf), 0xd72f);
+}
+
+TEST(Opcode, SKP) {
+  EXPECT_EQ(op::SKP(regs::V5), 0xe59e);
+  EXPECT_EQ(op::SKP(regs::VF), 0xef9e);
+  EXPECT_EQ(op::SKP(regs::VD), 0xed9e);
+  EXPECT_EQ(op::SKP(regs::V0), 0xe09e);
+  EXPECT_EQ(op::SKP(regs::V2), 0xe29e);
+}
+
+TEST(Opcode, SKNP) {
+  EXPECT_EQ(op::SKNP(regs::V5), 0xe5a1);
+  EXPECT_EQ(op::SKNP(regs::VF), 0xefa1);
+  EXPECT_EQ(op::SKNP(regs::VD), 0xeda1);
+  EXPECT_EQ(op::SKNP(regs::V0), 0xe0a1);
+  EXPECT_EQ(op::SKNP(regs::V2), 0xe2a1);
+}

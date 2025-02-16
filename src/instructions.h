@@ -99,6 +99,15 @@ constexpr auto JP_V0(word addr) -> word { return 0xb000 | address(addr); }
 constexpr auto RND(regs reg, byte value) -> word {
   return 0xc000 | (as<word>(reg) << 8) | value;
 }
+
+constexpr auto DRW(regs reg_x, regs reg_y, byte count) -> word {
+  return 0xd000 | (as<word>(reg_x) << 8) | (as<word>(reg_y) << 4) |
+         (count & 0x0f);
+}
+
+constexpr auto SKP(regs reg) { return 0xe09e | (as<word>(reg) << 8); }
+
+constexpr auto SKNP(regs reg) { return 0xe0a1 | (as<word>(reg) << 8); }
 }  // namespace chip8::opcode
 
 #endif

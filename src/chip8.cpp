@@ -90,8 +90,8 @@ auto chip8::print_registers() const -> void {
   fmt::print("SP: {:02x}\n", m_stack.size());
   fmt::print("R : {:02x}\n", m_r);
 
-  fmt::print("Key: {}\n",
-             m_keyboard.key() ? as<std::string>(*m_keyboard.key()) : "NONE"s);
+  auto key = m_keyboard.key();
+  fmt::print("Key: {}\n", key ? as<std::string>(*key) : "NONE");
 }
 
 auto chip8::parse_opcode(word opcode) const -> std::string {
@@ -519,6 +519,11 @@ auto chip8::debug_set_regs(std::stringstream& cmd) -> void {
   auto reg_str = std::string{};
   cmd >> reg_str;
 
+  if (not magic_enum::enum_contains<regs>(reg_str)) {
+    fmt::print(std::cerr, "Invalid register\n");
+    return;
+  }
+
   auto reg = as<regs>(reg_str);
 
   if (cmd.eof()) {
@@ -529,18 +534,16 @@ auto chip8::debug_set_regs(std::stringstream& cmd) -> void {
   auto addr = 0x0000_w;
 
   switch (reg) {
-    case regs::INVALID:
-      fmt::print(std::cerr, "Invalid register\n");
-      return;
-    case regs::PC:
+    using enum regs;
+    case PC:
       cmd >> std::hex >> addr;
       m_pc = address(addr);
       return;
-    case regs::R:
+    case R:
       cmd >> std::hex >> addr;
       m_r = addr;
       return;
-    case regs::I:
+    case I:
       cmd >> std::hex >> addr;
       m_i = address(addr);
       return;

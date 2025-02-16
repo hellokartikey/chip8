@@ -33,7 +33,6 @@ constexpr auto address(word addr) -> word { return as<word>(addr & 0x0fff); }
 
 using registers = std::array<byte, 0x10>;
 
-// TODO - Remove INVALID enum in favor of std::optional<regs>
 enum class regs : byte {
   V0 = 0x00,
   V1 = 0x01,
@@ -55,7 +54,6 @@ enum class regs : byte {
   PC = 0xf0,
   R = 0xf1,
   I = 0xf2,
-  INVALID = 0xff
 };
 
 enum class keys : byte {

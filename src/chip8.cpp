@@ -18,6 +18,7 @@
 
 #include "bit.h"
 #include "common.h"
+#include "helpers.h"
 #include "instructions.h"
 #include "parser.h"
 #include "screen.h"
@@ -92,8 +93,8 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
 
   auto addr = parsed.get_addr();
   auto lo_byte = parsed.get_lo_byte();
-  auto reg_x = reg_to_str(to_reg(parsed.get_nibble(2)));
-  auto reg_y = reg_to_str(to_reg(parsed.get_nibble(1)));
+  auto reg_x = as<std::string>(as<regs>(parsed.get_nibble(2)));
+  auto reg_y = as<std::string>(as<regs>(parsed.get_nibble(1)));
 
   switch (parsed.get_nibble(3)) {
     case 0x0:
@@ -285,8 +286,8 @@ auto chip8::exec() -> void {
   auto opcode = parsed.get_opcode();
   auto addr = parsed.get_addr();
   auto lo_byte = parsed.get_lo_byte();
-  auto reg_x = to_reg(parsed.get_nibble(2));
-  auto reg_y = to_reg(parsed.get_nibble(1));
+  auto reg_x = as<regs>(parsed.get_nibble(2));
+  auto reg_y = as<regs>(parsed.get_nibble(1));
 
   switch (parsed.get_nibble(3)) {
     case 0x0:
@@ -510,7 +511,7 @@ auto chip8::debug_set_regs(std::stringstream& cmd) -> void {
   auto reg_str = std::string{};
   cmd >> reg_str;
 
-  auto reg = str_to_reg(reg_str);
+  auto reg = as<regs>(reg_str);
 
   if (cmd.eof()) {
     fmt::print(std::cerr, "Invalid syntax...\n");

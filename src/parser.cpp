@@ -3,6 +3,7 @@
 #include <cstddef>
 
 #include "common.h"
+#include "helpers.h"
 
 namespace chip8 {
 parsed_instruction::parsed_instruction(word opcode) : m_opcode(opcode) {}

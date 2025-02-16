@@ -7,8 +7,9 @@ class CHIP8(ConanFile):
     generators = "CMakeDeps", "CMakeToolchain"
 
     def requirements(self):
-        self.requires("fmt/11.1.1")
         self.requires("raylib/5.0")
+        self.requires("fmt/11.1.1")
+        self.requires("magic_enum/0.9.7")
 
     def build_requirements(self):
         self.test_requires("gtest/1.15.0")

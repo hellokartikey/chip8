@@ -5,6 +5,7 @@
 #include <concepts>
 
 #include "common.h"
+#include "helpers.h"
 
 namespace chip8 {
 template <typename T>

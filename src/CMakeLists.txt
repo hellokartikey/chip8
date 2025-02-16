@@ -3,6 +3,7 @@ add_library(chip8++)
 target_link_libraries(
   chip8++
   fmt::fmt
+  magic_enum::magic_enum
   raylib
 )
 
@@ -24,6 +25,7 @@ INTERFACE
   bit.h
   keyboard.h
   cli.h
+  helpers.h
 )
 
 add_executable(chip8)

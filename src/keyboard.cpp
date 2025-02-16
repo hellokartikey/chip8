@@ -16,7 +16,7 @@ auto keyboard::press(keys key) -> void { m_key = key; }
 
 auto keyboard::check() -> void {
   for (const auto& [key, value] : KEYBOARD_MAP) {
-    if (IsKeyPressed(key)) {
+    if (IsKeyDown(key)) {
       press(value);
       return;
     }

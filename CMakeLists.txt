@@ -7,8 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-find_package(fmt REQUIRED)
 find_package(raylib REQUIRED)
+find_package(fmt REQUIRED)
+find_package(magic_enum REQUIRED)
 
 add_compile_options(-fsanitize=address)
 add_link_options(-fsanitize=address)

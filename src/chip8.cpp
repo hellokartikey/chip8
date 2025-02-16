@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <magic_enum/magic_enum.hpp>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -73,6 +74,8 @@ auto chip8::print_memory(word begin, word end) const -> void {
 }
 
 auto chip8::print_registers() const -> void {
+  using namespace std::literals;
+
   fmt::print("V0: {:02x}\tV1: {:02x}\t", get(regs::V0), get(regs::V1));
   fmt::print("V2: {:02x}\tV3: {:02x}\n", get(regs::V2), get(regs::V3));
   fmt::print("V4: {:02x}\tV5: {:02x}\t", get(regs::V4), get(regs::V5));
@@ -86,6 +89,9 @@ auto chip8::print_registers() const -> void {
   fmt::print("I : {:04x}\n", m_i);
   fmt::print("SP: {:02x}\n", m_stack.size());
   fmt::print("R : {:02x}\n", m_r);
+
+  fmt::print("Key: {}\n",
+             m_keyboard.key() ? as<std::string>(*m_keyboard.key()) : "NONE"s);
 }
 
 auto chip8::parse_opcode(word opcode) const -> std::string {
@@ -492,6 +498,8 @@ auto chip8::debug_shell() -> void {
       debug_pixel(cmd);
     } else if (sub_command == "rom") {
       debug_rom(cmd);
+    } else if (sub_command == "press") {
+      debug_press(cmd);
     } else {
       fmt::print(std::cerr, "Invalid command...\n");
     }
@@ -610,6 +618,7 @@ auto chip8::debug_help(std::stringstream& /*cmd*/) -> void {
       "  push [addr]          Push an address to the stack\n"
       "  pop                  Pop an address from the stack\n"
       "  rnd                  Generate a random byte\n"
+      "  press [key|NONE]     Press a key\n"
       "  display              Display screen state in terminal\n"
       "  screen [on|off]      Turn on raylib powered screen\n"
       "  clear                Clear all pixels on screen\n"
@@ -713,6 +722,27 @@ auto chip8::debug_rom(std::stringstream& cmd) -> void {
   std::filesystem::path file{};
   cmd >> file;
   load_rom(file);
+}
+
+auto chip8::debug_press(std::stringstream& cmd) -> void {
+  if (cmd.eof()) {
+    fmt::print(stderr, "Invalid syntax.\n");
+    return;
+  }
+
+  std::string key;
+  cmd >> key;
+
+  if (key == "NONE") {
+    m_keyboard.clear();
+    return;
+  }
+
+  if (magic_enum::enum_contains<keys>(key)) {
+    m_keyboard.press(as<keys>(key));
+  } else {
+    fmt::print(stderr, "Invalid key!\n");
+  }
 }
 
 auto chip8::sys(word /*addr*/) -> void {

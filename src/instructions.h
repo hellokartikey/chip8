@@ -18,6 +18,9 @@ constexpr auto CLS() -> word { return 0x00e0; }
 // Return from a subroutine
 constexpr auto RET() -> word { return 0x00ee; }
 
+// System opcode
+constexpr auto SYS(word addr) -> word { return address(addr); }
+
 // Jump to location addr
 constexpr auto JP(word addr) -> word { return 0x1000 | address(addr); }
 
@@ -105,9 +108,33 @@ constexpr auto DRW(regs reg_x, regs reg_y, byte count) -> word {
          (count & 0x0f);
 }
 
-constexpr auto SKP(regs reg) { return 0xe09e | (as<word>(reg) << 8); }
+constexpr auto SKP(regs reg) -> word { return 0xe09e | (as<word>(reg) << 8); }
 
-constexpr auto SKNP(regs reg) { return 0xe0a1 | (as<word>(reg) << 8); }
+constexpr auto SKNP(regs reg) -> word { return 0xe0a1 | (as<word>(reg) << 8); }
+
+constexpr auto LD_VX_DT(regs reg) -> word {
+  return 0xf007 | (as<word>(reg) << 8);
+}
+
+constexpr auto LD_KEY(regs reg) -> word {
+  return 0xf00a | (as<word>(reg) << 8);
+}
+
+constexpr auto LD_DT(regs reg) -> word { return 0x015 | (as<word>(reg) << 8); }
+
+constexpr auto LD_ST(regs reg) -> word { return 0xf018 | (as<word>(reg) << 8); }
+
+constexpr auto ADD_I(regs reg) -> word { return 0xf01e | (as<word>(reg) << 8); }
+
+constexpr auto LD_F(regs reg) -> word { return 0xf029 | (as<word>(reg) << 8); }
+
+constexpr auto LD_B(regs reg) -> word { return 0xf033 | (as<word>(reg) << 8); }
+
+constexpr auto LD_I(regs reg) -> word { return 0xf055 | (as<word>(reg) << 8); }
+
+constexpr auto LD_VX_I(regs reg) -> word {
+  return 0xf065 | (as<word>(reg) << 8);
+}
 }  // namespace chip8::opcode
 
 #endif

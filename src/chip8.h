@@ -102,6 +102,9 @@ class chip8 {
   auto ld_dt(regs reg) -> void;
   auto st_dt(regs reg) -> void;
   auto ld_key(regs reg) -> void;
+  auto ld_st(regs reg) -> void;
+  auto add_i(regs reg) -> void;
+  // TODO - LD F, Vx
 
   auto invalid(word opcode) -> void;
 

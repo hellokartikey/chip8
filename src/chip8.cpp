@@ -179,10 +179,14 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       switch (lo_byte) {
         case 0x07:
           return fmt::format("LD {}, DT", reg_x);
-        case 0x15:
-          return fmt::format("LD DT, {}", reg_x);
         case 0x0a:
           return fmt::format("LD {}, K", reg_x);
+        case 0x15:
+          return fmt::format("LD DT, {}", reg_x);
+        case 0x18:
+          return fmt::format("LD ST, {}", reg_x);
+        case 0x1e:
+          return fmt::format("ADD I, {}", reg_x);
         case 0x33:
           return fmt::format("LD B, {}", reg_x);
         case 0x55:
@@ -416,6 +420,12 @@ auto chip8::exec() -> void {
           break;
         case 0x15:
           st_dt(reg_x);
+          break;
+        case 0x18:
+          ld_st(reg_x);
+          break;
+        case 0x1e:
+          add_i(reg_x);
           break;
         case 0x33:
           bcd(reg_x);
@@ -1002,4 +1012,8 @@ auto chip8::ld_key(regs reg) -> void {
     get(reg) = as<byte>(*key);
   }
 }
+
+auto chip8::ld_st(regs reg) -> void { m_st = get(reg); }
+
+auto chip8::add_i(regs reg) -> void { m_i += get(reg); }
 }  // namespace chip8

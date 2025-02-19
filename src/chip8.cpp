@@ -46,6 +46,12 @@ auto chip8::get(regs reg) const -> byte {
   return m_registers.at(std::to_underlying(reg));
 }
 
+auto chip8::dt_tick() -> void {
+  if (m_dt != 0) {
+    m_dt--;
+  }
+}
+
 auto chip8::get_random() -> byte { return m_r = randomness(random_device); }
 
 auto chip8::dump_memory() -> memory& { return m_memory; }
@@ -85,10 +91,9 @@ auto chip8::print_registers() const -> void {
   fmt::print("VC: {:02x}\tVD: {:02x}\t", get(regs::VC), get(regs::VD));
   fmt::print("VE: {:02x}\tVF: {:02x}\n", get(regs::VE), get(regs::VF));
 
-  fmt::print("PC: {:04x}\n", m_pc);
-  fmt::print("I : {:04x}\n", m_i);
-  fmt::print("SP: {:02x}\n", m_stack.size());
-  fmt::print("R : {:02x}\n", m_r);
+  fmt::print("PC: {:04x}\t I: {:04x}\n", m_pc, m_i);
+  fmt::print("SP: {:02x}\t\t R: {:02x}\n", m_stack.size(), m_r);
+  fmt::print("DT: {:02x}\t\tST: {:02x}\n", m_dt, m_st);
 
   auto key = m_keyboard.key();
   fmt::print("Key: {}\n", key ? as<std::string>(*key) : "NONE");
@@ -161,7 +166,6 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       return fmt::format("RND {}, {:02x}", reg_x, lo_byte);
     case 0xd:
       return fmt::format("DRW {}, {}, {}", reg_x, reg_y, parsed.get_nibble(0));
-    // TODO - SKP Vx and SKNP Vx
     case 0xe:
       switch (lo_byte) {
         case 0x9e:
@@ -175,6 +179,10 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
       switch (lo_byte) {
         case 0x07:
           return fmt::format("LD {}, DT", reg_x);
+        case 0x15:
+          return fmt::format("LD DT, {}", reg_x);
+        case 0x0a:
+          return fmt::format("LD {}, K", reg_x);
         case 0x33:
           return fmt::format("LD B, {}", reg_x);
         case 0x55:
@@ -403,6 +411,12 @@ auto chip8::exec() -> void {
         case 0x07:
           ld_dt(reg_x);
           break;
+        case 0x0a:
+          ld_key(reg_x);
+          break;
+        case 0x15:
+          st_dt(reg_x);
+          break;
         case 0x33:
           bcd(reg_x);
           break;
@@ -436,6 +450,8 @@ auto chip8::exec_n(std::uint64_t count) -> void {
 auto chip8::exec_all() -> void {
   while (not is_invalid()) {
     exec();
+
+    m_timer.tick();
 
     if (is_raylib()) {
       if (WindowShouldClose()) {
@@ -553,22 +569,26 @@ auto chip8::debug_set_regs(std::stringstream& cmd) -> void {
 
   auto addr = 0x0000_w;
 
+  cmd >> std::hex >> addr;
+
   switch (reg) {
     using enum regs;
     case PC:
-      cmd >> std::hex >> addr;
       m_pc = address(addr);
       return;
     case R:
-      cmd >> std::hex >> addr;
       m_r = addr;
       return;
     case I:
-      cmd >> std::hex >> addr;
       m_i = address(addr);
       return;
+    case DT:
+      m_dt = addr;
+      return;
+    case ST:
+      m_st = addr;
+      return;
     default:
-      cmd >> std::hex >> addr;
       get(reg) = addr;
   }
 }
@@ -900,8 +920,6 @@ auto chip8::drw(regs reg_x, regs reg_y, byte count) -> void {
   }
 }
 
-auto chip8::ld_dt(regs reg) -> void { get(reg) = m_dt; }
-
 auto chip8::bcd(regs reg) -> void {
   auto data = get(reg);
 
@@ -975,4 +993,13 @@ auto chip8::sknp(regs reg) -> void {
   }
 }
 
+auto chip8::ld_dt(regs reg) -> void { get(reg) = m_dt; }
+
+auto chip8::st_dt(regs reg) -> void { m_dt = get(reg); }
+
+auto chip8::ld_key(regs reg) -> void {
+  for (auto key = m_keyboard.key(); key;) {
+    get(reg) = as<byte>(*key);
+  }
+}
 }  // namespace chip8

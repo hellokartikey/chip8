@@ -51,9 +51,11 @@ enum class regs : byte {
   VE = 0x0e,
   VF = 0x0f,
 
-  PC = 0xf0,
-  R = 0xf1,
-  I = 0xf2,
+  DT = 0x70,
+  ST = 0x71,
+  PC = 0x72,
+  R = 0x73,
+  I = 0x74
 };
 
 enum class keys : byte {

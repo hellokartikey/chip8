@@ -9,6 +9,7 @@
 #include "keyboard.h"
 #include "screen.h"
 #include "stack.h"
+#include "timer.h"
 
 namespace chip8 {
 class chip8 {
@@ -26,6 +27,9 @@ class chip8 {
   // Registers API
   auto get(regs reg) -> byte&;
   [[nodiscard]] auto get(regs reg) const -> byte;
+
+  auto dt() -> byte&;
+  auto dt_tick() -> void;
 
   [[nodiscard]] auto get_random() -> byte;
 
@@ -90,12 +94,14 @@ class chip8 {
   auto jp_v0(word addr) -> void;
   auto rnd(regs reg, byte value) -> void;
   auto drw(regs reg_x, regs reg_y, byte count) -> void;
-  auto ld_dt(regs reg) -> void;
   auto bcd(regs reg) -> void;
   auto st_regs() -> void;
   auto ld_regs() -> void;
   auto skp(regs reg) -> void;
   auto sknp(regs reg) -> void;
+  auto ld_dt(regs reg) -> void;
+  auto st_dt(regs reg) -> void;
+  auto ld_key(regs reg) -> void;
 
   auto invalid(word opcode) -> void;
 
@@ -103,6 +109,7 @@ class chip8 {
   auto debug_shell() -> void;
 
  private:
+  // TODO - Move away from std::stringstream
   auto debug_help(std::stringstream& cmd) -> void;
   auto debug_dasm(std::stringstream& cmd) -> void;
   auto debug_mem(std::stringstream& cmd) -> void;
@@ -132,6 +139,8 @@ class chip8 {
   keyboard m_keyboard;
 
   byte m_dt{};
+  timer m_timer{[this]() { this->dt_tick(); }};
+
   byte m_st{};
 
   bool m_is_invalid_state{false};

@@ -26,6 +26,7 @@ INTERFACE
   keyboard.h
   cli.h
   helpers.h
+  timer.h
 )
 
 add_executable(chip8)

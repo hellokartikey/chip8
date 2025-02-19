@@ -95,8 +95,8 @@ class chip8 {
   auto rnd(regs reg, byte value) -> void;
   auto drw(regs reg_x, regs reg_y, byte count) -> void;
   auto bcd(regs reg) -> void;
-  auto st_regs() -> void;
-  auto ld_regs() -> void;
+  auto st_regs(regs reg) -> void;
+  auto ld_regs(regs reg) -> void;
   auto skp(regs reg) -> void;
   auto sknp(regs reg) -> void;
   auto ld_dt(regs reg) -> void;
@@ -104,7 +104,7 @@ class chip8 {
   auto ld_key(regs reg) -> void;
   auto ld_st(regs reg) -> void;
   auto add_i(regs reg) -> void;
-  // TODO - LD F, Vx
+  auto ld_font(regs reg) -> void;
 
   auto invalid(word opcode) -> void;
 
@@ -144,6 +144,7 @@ class chip8 {
   byte m_dt{};
   timer m_timer{[this]() { this->dt_tick(); }};
 
+  // TOOD - Implement sound timer
   byte m_st{};
 
   bool m_is_invalid_state{false};

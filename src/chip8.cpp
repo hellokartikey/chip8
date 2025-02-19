@@ -12,6 +12,7 @@
 #include <iostream>
 #include <iterator>
 #include <magic_enum/magic_enum.hpp>
+#include <ranges>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -187,12 +188,14 @@ auto chip8::parse_opcode(word opcode) const -> std::string {
           return fmt::format("LD ST, {}", reg_x);
         case 0x1e:
           return fmt::format("ADD I, {}", reg_x);
+        case 0x29:
+          return fmt::format("LD F, {}", reg_x);
         case 0x33:
           return fmt::format("LD B, {}", reg_x);
         case 0x55:
-          return fmt::format("LD [I], Vx");
+          return fmt::format("LD [I], {}", reg_x);
         case 0x65:
-          return fmt::format("LD Vx, [I]");
+          return fmt::format("LD {}, [I]", reg_x);
         default:
           return invalid_opcode(opcode);
       }
@@ -384,6 +387,7 @@ auto chip8::exec() -> void {
           invalid(opcode);
           break;
       }
+      break;
     case 0x9:
       sne(reg_x, reg_y);
       break;
@@ -410,6 +414,7 @@ auto chip8::exec() -> void {
         default:
           invalid(opcode);
       }
+      break;
     case 0xf:
       switch (lo_byte) {
         case 0x07:
@@ -427,14 +432,17 @@ auto chip8::exec() -> void {
         case 0x1e:
           add_i(reg_x);
           break;
+        case 0x29:
+          ld_font(reg_x);
+          break;
         case 0x33:
           bcd(reg_x);
           break;
         case 0x55:
-          st_regs();
+          st_regs(reg_x);
           break;
         case 0x65:
-          ld_regs();
+          ld_regs(reg_x);
           break;
         default:
           invalid(opcode);
@@ -947,44 +955,22 @@ auto chip8::bcd(regs reg) -> void {
   write(addr++, one);
 }
 
-auto chip8::st_regs() -> void {
+auto chip8::st_regs(regs reg) -> void {
+  namespace views = std::ranges::views;
+
   auto addr = m_i;
-  write(addr++, get(regs::V0));
-  write(addr++, get(regs::V1));
-  write(addr++, get(regs::V2));
-  write(addr++, get(regs::V3));
-  write(addr++, get(regs::V4));
-  write(addr++, get(regs::V5));
-  write(addr++, get(regs::V6));
-  write(addr++, get(regs::V7));
-  write(addr++, get(regs::V8));
-  write(addr++, get(regs::V9));
-  write(addr++, get(regs::VA));
-  write(addr++, get(regs::VB));
-  write(addr++, get(regs::VC));
-  write(addr++, get(regs::VD));
-  write(addr++, get(regs::VE));
-  write(addr++, get(regs::VF));
+  for (auto idx : views::iota(0, as<int>(reg))) {
+    write(addr++, get(as<regs>(idx)));
+  }
 }
 
-auto chip8::ld_regs() -> void {
+auto chip8::ld_regs(regs reg) -> void {
+  namespace views = std::ranges::views;
+
   auto addr = m_i;
-  get(regs::V0) = read(addr++);
-  get(regs::V1) = read(addr++);
-  get(regs::V2) = read(addr++);
-  get(regs::V3) = read(addr++);
-  get(regs::V4) = read(addr++);
-  get(regs::V5) = read(addr++);
-  get(regs::V6) = read(addr++);
-  get(regs::V7) = read(addr++);
-  get(regs::V8) = read(addr++);
-  get(regs::V9) = read(addr++);
-  get(regs::VA) = read(addr++);
-  get(regs::VB) = read(addr++);
-  get(regs::VC) = read(addr++);
-  get(regs::VD) = read(addr++);
-  get(regs::VE) = read(addr++);
-  get(regs::VF) = read(addr++);
+  for (auto idx : views::iota(0, as<int>(reg))) {
+    get(as<regs>(idx)) = read(addr++);
+  }
 }
 
 auto chip8::skp(regs reg) -> void {
@@ -1016,4 +1002,6 @@ auto chip8::ld_key(regs reg) -> void {
 auto chip8::ld_st(regs reg) -> void { m_st = get(reg); }
 
 auto chip8::add_i(regs reg) -> void { m_i += get(reg); }
+
+auto chip8::ld_font(regs reg) -> void { m_i = (get(reg) % 0x0f) * 5; }
 }  // namespace chip8

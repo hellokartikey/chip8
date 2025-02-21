@@ -865,30 +865,25 @@ auto chip8::xor_(regs dst, regs src) -> void { get(dst) ^= get(src); }
 auto chip8::sub(regs dst, regs src) -> void {
   const bool set_flag = not(get(dst) < get(src));
   get(dst) -= get(src);
-  get(regs::VF) = set_flag ? 0x01 : 0x00;
+  get(regs::VF) = as<byte>(set_flag);
 }
 
 auto chip8::shr(regs reg) -> void {
-  get(regs::VF) = get(reg) & 0x01;
+  const bool set_flag = (get(reg) & 0x01) != 0;
   get(reg) >>= 1;
+  get(regs::VF) = as<byte>(set_flag);
 }
 
 auto chip8::subn(regs dst, regs src) -> void {
   const bool set_flag = not(get(src) < get(dst));
   get(dst) = get(src) - get(dst);
-  get(regs::VF) = set_flag ? 0x01 : 0x00;
+  get(regs::VF) = as<byte>(set_flag);
 }
 
 auto chip8::shl(regs reg) -> void {
-  if ((get(reg) & 0x80) != 0x00) {
-    // MSB is 1
-    get(regs::VF) = 0x01;
-  } else {
-    // MSB is 0
-    get(regs::VF) = 0x00;
-  }
-
+  const bool set_flag = (get(reg) & 0x80) != 0x00;
   get(reg) <<= 1;
+  get(regs::VF) = as<byte>(set_flag);
 }
 
 auto chip8::sne(regs reg1, regs reg2) -> void {
@@ -948,10 +943,10 @@ auto chip8::bcd(regs reg) -> void {
 }
 
 auto chip8::st_regs(regs reg) -> void {
-  namespace views = std::ranges::views;
+  namespace views = std::views;
 
   auto addr = m_i;
-  for (auto idx : views::iota(0, as<int>(reg))) {
+  for (auto idx : views::iota(0, as<int>(reg) + 1)) {
     write(addr++, get(as<regs>(idx)));
   }
 }
@@ -960,7 +955,7 @@ auto chip8::ld_regs(regs reg) -> void {
   namespace views = std::ranges::views;
 
   auto addr = m_i;
-  for (auto idx : views::iota(0, as<int>(reg))) {
+  for (auto idx : views::iota(0, as<int>(reg) + 1)) {
     get(as<regs>(idx)) = read(addr++);
   }
 }

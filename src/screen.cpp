@@ -91,7 +91,7 @@ auto pixel_iterator::operator--(int) -> pixel_iterator {
 
 auto pixel_iterator::operator*() -> screen::reference {
   auto& screen_v = *(this->m_screen);
-  return screen_v[m_idx_x, m_idx_y];
+  return screen_v[m_idx_x % WIDTH, m_idx_y % HEIGHT];
 }
 
 auto pixel_iterator::operator*() const -> bool {

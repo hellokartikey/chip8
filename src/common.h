@@ -33,6 +33,7 @@ constexpr auto address(word addr) -> word { return as<word>(addr & 0x0fff); }
 
 using registers = std::array<byte, 0x10>;
 
+// TODO - Remove non general purpose registers
 enum class regs : byte {
   V0 = 0x00,
   V1 = 0x01,

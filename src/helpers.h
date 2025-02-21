@@ -6,29 +6,23 @@
 #include <string_view>
 #include <type_traits>
 
-// Enum to String
 template <typename To, typename From>
-  requires std::is_enum_v<From> && std::is_same_v<To, std::string_view>
-constexpr auto as(const From& reg) -> To {
-  return magic_enum::enum_name(reg);
-}
-
-template <typename To, typename From>
-  requires std::is_enum_v<From> && std::is_same_v<To, std::string>
-constexpr auto as(const From& reg) -> To {
-  return static_cast<std::string>(as<std::string_view>(reg));
-}
-
-// String to Enum
-template <typename To, typename From>
-  requires std::is_enum_v<To> && std::is_same_v<From, std::string>
-constexpr auto as(const From& str) -> To {
-  return magic_enum::enum_cast<To>(str).value();
-}
-
-template <typename To, typename From>
-auto as(const From& from) {
-  return static_cast<To>(from);
+constexpr auto as(const From& from) -> To {
+  if constexpr (std::is_enum_v<To>) {
+    // String to Enum
+    return magic_enum::enum_cast<To>(from).value();
+  } else if constexpr (std::is_enum_v<From>) {
+    // Enum to String
+    if constexpr (std::is_same_v<To, std::string>) {
+      return as<std::string>(as<std::string_view>(from));
+    } else if constexpr (std::is_same_v<To, std::string_view>) {
+      return magic_enum::enum_name(from);
+    } else {
+      return static_cast<To>(from);
+    }
+  } else {
+    return static_cast<To>(from);
+  }
 }
 
 #endif

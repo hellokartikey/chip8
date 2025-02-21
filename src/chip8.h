@@ -28,7 +28,6 @@ class chip8 {
   auto get(regs reg) -> byte&;
   [[nodiscard]] auto get(regs reg) const -> byte;
 
-  auto dt() -> byte&;
   auto dt_tick() -> void;
 
   [[nodiscard]] auto get_random() -> byte;

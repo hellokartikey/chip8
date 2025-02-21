@@ -850,8 +850,8 @@ auto chip8::add(regs reg, byte value) -> void { get(reg) += value; }
 
 auto chip8::add(regs dst, regs src) -> void {
   auto res = get(dst) + get(src);
-  get(regs::VF) = res > 255 ? 0x01 : 0x00;
   get(dst) = as<byte>(res);
+  get(regs::VF) = res > 255 ? 0x01 : 0x00;
 }
 
 auto chip8::ld(regs dst, regs src) -> void { get(dst) = get(src); }
@@ -863,13 +863,9 @@ auto chip8::and_(regs dst, regs src) -> void { get(dst) &= get(src); }
 auto chip8::xor_(regs dst, regs src) -> void { get(dst) ^= get(src); }
 
 auto chip8::sub(regs dst, regs src) -> void {
-  if (not(get(dst) < get(src))) {
-    get(regs::VF) = 0x01;
-  } else {
-    get(regs::VF) = 0x00;
-  }
-
+  const bool set_flag = not(get(dst) < get(src));
   get(dst) -= get(src);
+  get(regs::VF) = set_flag ? 0x01 : 0x00;
 }
 
 auto chip8::shr(regs reg) -> void {
@@ -878,13 +874,9 @@ auto chip8::shr(regs reg) -> void {
 }
 
 auto chip8::subn(regs dst, regs src) -> void {
-  if (not(get(src) < get(dst))) {
-    get(regs::VF) = 0x01;
-  } else {
-    get(regs::VF) = 0x00;
-  }
-
+  const bool set_flag = not(get(src) < get(dst));
   get(dst) = get(src) - get(dst);
+  get(regs::VF) = set_flag ? 0x01 : 0x00;
 }
 
 auto chip8::shl(regs reg) -> void {

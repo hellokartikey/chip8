@@ -304,7 +304,12 @@ auto chip8::close_raylib() -> void {
 
 auto chip8::is_raylib() const -> bool { return m_raylib; }
 
-auto chip8::check_close() const -> bool { return WindowShouldClose(); }
+auto chip8::check_close() -> bool {
+  if (m_should_close) {
+    return true;
+  }
+  return m_should_close = WindowShouldClose();
+}
 
 auto chip8::start_addr() const -> word { return m_start_addr; }
 
@@ -462,12 +467,7 @@ auto chip8::exec() -> void {
       break;
   }
 
-  m_timer.tick();
-
-  if (is_raylib()) {
-    m_keyboard.check();
-    m_screen.draw_screen();
-  }
+  update_peripherals();
 }
 
 auto chip8::exec_n(std::uint64_t count) -> void {
@@ -486,6 +486,15 @@ auto chip8::exec_all() -> void {
   }
 
   debug_shell();
+}
+
+auto chip8::update_peripherals() -> void {
+  m_timer.tick();
+
+  if (is_raylib()) {
+    m_keyboard.check();
+    m_screen.draw_screen();
+  }
 }
 
 auto chip8::load_rom(const std::filesystem::path& file) -> void {
@@ -991,12 +1000,28 @@ auto chip8::ld_dt(regs reg) -> void { get(reg) = m_dt; }
 auto chip8::st_dt(regs reg) -> void { m_dt = get(reg); }
 
 auto chip8::ld_key(regs reg) -> void {
-  while (auto key = m_keyboard.key()) {
+  auto key = m_keyboard.key();
+
+  while (not key) {
+    update_peripherals();
+
+    key = m_keyboard.key();
+
     if (check_close()) {
       return;
     }
+  }
 
-    get(reg) = as<byte>(*key);
+  get(reg) = as<byte>(*key);
+
+  while (key) {
+    update_peripherals();
+
+    key = m_keyboard.key();
+
+    if (check_close()) {
+      return;
+    }
   }
 }
 

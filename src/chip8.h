@@ -50,7 +50,7 @@ class chip8 {
   auto init_raylib() -> void;
   auto close_raylib() -> void;
   [[nodiscard]] auto is_raylib() const -> bool;
-  [[nodiscard]] auto check_close() const -> bool;
+  [[nodiscard]] auto check_close() -> bool;
 
  public:
   // Program API
@@ -66,6 +66,8 @@ class chip8 {
 
   // Execute continously
   auto exec_all() -> void;
+
+  auto update_peripherals() -> void;
 
   // Rom file API
   auto load_rom(const std::filesystem::path& file) -> void;

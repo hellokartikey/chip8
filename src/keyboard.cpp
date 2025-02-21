@@ -19,18 +19,17 @@ auto keyboard::press(keys key) -> void { m_keys.set(as<int>(key)); }
 auto keyboard::clear() -> void { m_keys.reset(); }
 
 auto keyboard::check() -> void {
+  clear();
+
   for (const auto& [key, value] : KEYBOARD_MAP) {
     if (IsKeyDown(key)) {
       press(value);
-      return;
     }
   }
-
-  clear();
 }
 
 auto keyboard::key() const -> std::optional<keys> {
-  for (auto idx = 0; idx < 16; idx++) {
+  for (auto idx = 0; idx < m_keys.size(); idx++) {
     if (m_keys.test(idx)) {
       return as<keys>(idx);
     }

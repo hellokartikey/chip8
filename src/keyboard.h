@@ -1,6 +1,7 @@
 #ifndef HK_CHIP8_KEYBOARD_H
 #define HK_CHIP8_KEYBOARD_H
 
+#include <bitset>
 #include <optional>
 
 #include "common.h"
@@ -12,6 +13,7 @@ class keyboard {
   [[nodiscard]] auto is_pressed() const -> bool;
 
   auto press(keys key) -> void;
+  auto clear(keys key) -> void;
   auto clear() -> void;
 
   [[nodiscard]] auto key() const -> std::optional<keys>;
@@ -19,7 +21,7 @@ class keyboard {
   auto check() -> void;
 
  private:
-  std::optional<keys> m_key;
+  std::bitset<16> m_keys;
 };
 }  // namespace chip8
 

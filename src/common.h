@@ -9,8 +9,8 @@
 
 #include "helpers.h"
 
-#define BG_COLOR SKYBLUE
-#define FG_COLOR DARKPURPLE
+#define BG_COLOR PINK
+#define FG_COLOR MAROON
 
 namespace chip8 {
 constexpr auto WIDTH = 64Z;

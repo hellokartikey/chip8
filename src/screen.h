@@ -45,6 +45,8 @@ class screen {
 
 class pixel_iterator {
  public:
+  using position = std::tuple<std::size_t, std::size_t>;
+
   explicit pixel_iterator(screen& p_screen, std::size_t pix_x = 0,
                           std::size_t pix_y = 0);
 
@@ -56,6 +58,9 @@ class pixel_iterator {
 
   auto operator*() -> screen::reference;
   auto operator*() const -> bool;
+
+  auto origin() const -> position;
+  auto index() const -> position;
 
  private:
   auto inc_idx() -> void;

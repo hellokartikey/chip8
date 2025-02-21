@@ -29,6 +29,7 @@ class chip8 {
   [[nodiscard]] auto get(regs reg) const -> byte;
 
   auto dt_tick() -> void;
+  auto st_tick() -> void;
 
   [[nodiscard]] auto get_random() -> byte;
 
@@ -49,6 +50,7 @@ class chip8 {
   auto init_raylib() -> void;
   auto close_raylib() -> void;
   [[nodiscard]] auto is_raylib() const -> bool;
+  [[nodiscard]] auto check_close() const -> bool;
 
  public:
   // Program API
@@ -85,9 +87,9 @@ class chip8 {
   auto and_(regs dst, regs src) -> void;
   auto xor_(regs dst, regs src) -> void;
   auto sub(regs dst, regs src) -> void;
-  auto shr(regs reg) -> void;
+  auto shr(regs dst, regs src) -> void;
   auto subn(regs dst, regs src) -> void;
-  auto shl(regs reg) -> void;
+  auto shl(regs dst, regs src) -> void;
   auto sne(regs reg1, regs reg2) -> void;
   auto ld_i(word addr) -> void;
   auto jp_v0(word addr) -> void;
@@ -141,12 +143,13 @@ class chip8 {
   keyboard m_keyboard;
 
   byte m_dt{};
-  timer m_timer{[this]() { this->dt_tick(); }};
-
   // TOOD - Implement sound timer
   byte m_st{};
 
-  bool m_is_invalid_state{false};
+  timer m_timer{[this]() {
+    this->dt_tick();
+    this->st_tick();
+  }};
 
   word m_start_addr{0x0200_w};
   word m_pc{m_start_addr};
@@ -157,6 +160,8 @@ class chip8 {
   screen m_screen;
 
   bool m_raylib{};
+  bool m_is_invalid_state{};
+  bool m_should_close{};
 
   std::random_device random_device;
   std::uniform_int_distribution<byte> randomness;

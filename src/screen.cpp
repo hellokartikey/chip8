@@ -118,4 +118,8 @@ auto pixel_iterator::dec_idx() -> void {
 
   m_idx_x--;
 }
+
+auto pixel_iterator::origin() const -> position { return {m_orig_x, m_orig_y}; }
+
+auto pixel_iterator::index() const -> position { return {m_idx_x, m_idx_y}; }
 }  // namespace chip8

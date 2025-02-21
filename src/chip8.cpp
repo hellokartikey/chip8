@@ -53,6 +53,12 @@ auto chip8::dt_tick() -> void {
   }
 }
 
+auto chip8::st_tick() -> void {
+  if (m_st != 0) {
+    m_st--;
+  }
+}
+
 auto chip8::get_random() -> byte { return m_r = randomness(random_device); }
 
 auto chip8::dump_memory() -> memory& { return m_memory; }
@@ -276,7 +282,7 @@ auto chip8::fetch() -> word {
 
 auto chip8::init_raylib() -> void {
   if (not is_raylib()) {
-    SetTraceLogLevel(LOG_ERROR);
+    SetTraceLogLevel(LOG_WARNING);
     InitWindow(WIDTH * PIXEL, HEIGHT * PIXEL, "hellokartikey - CHIP8 Emulator");
 
     BeginDrawing();
@@ -297,6 +303,8 @@ auto chip8::close_raylib() -> void {
 }
 
 auto chip8::is_raylib() const -> bool { return m_raylib; }
+
+auto chip8::check_close() const -> bool { return WindowShouldClose(); }
 
 auto chip8::start_addr() const -> word { return m_start_addr; }
 
@@ -375,13 +383,13 @@ auto chip8::exec() -> void {
           sub(reg_x, reg_y);
           break;
         case 0x6:
-          shr(reg_x);
+          shr(reg_x, reg_y);
           break;
         case 0x7:
           subn(reg_x, reg_y);
           break;
         case 0xe:
-          shl(reg_x);
+          shl(reg_x, reg_y);
           break;
         default:
           invalid(opcode);
@@ -454,7 +462,10 @@ auto chip8::exec() -> void {
       break;
   }
 
+  m_timer.tick();
+
   if (is_raylib()) {
+    m_keyboard.check();
     m_screen.draw_screen();
   }
 }
@@ -467,17 +478,11 @@ auto chip8::exec_n(std::uint64_t count) -> void {
 
 auto chip8::exec_all() -> void {
   while (not is_invalid()) {
-    exec();
-
-    m_timer.tick();
-
-    if (is_raylib()) {
-      if (WindowShouldClose()) {
-        return;
-      }
-
-      m_keyboard.check();
+    if (check_close()) {
+      return;
     }
+
+    exec();
   }
 
   debug_shell();
@@ -856,11 +861,20 @@ auto chip8::add(regs dst, regs src) -> void {
 
 auto chip8::ld(regs dst, regs src) -> void { get(dst) = get(src); }
 
-auto chip8::or_(regs dst, regs src) -> void { get(dst) |= get(src); }
+auto chip8::or_(regs dst, regs src) -> void {
+  get(dst) |= get(src);
+  get(regs::VF) = 0x00;
+}
 
-auto chip8::and_(regs dst, regs src) -> void { get(dst) &= get(src); }
+auto chip8::and_(regs dst, regs src) -> void {
+  get(dst) &= get(src);
+  get(regs::VF) = 0x00;
+}
 
-auto chip8::xor_(regs dst, regs src) -> void { get(dst) ^= get(src); }
+auto chip8::xor_(regs dst, regs src) -> void {
+  get(dst) ^= get(src);
+  get(regs::VF) = 0x00;
+}
 
 auto chip8::sub(regs dst, regs src) -> void {
   const bool set_flag = not(get(dst) < get(src));
@@ -868,9 +882,9 @@ auto chip8::sub(regs dst, regs src) -> void {
   get(regs::VF) = as<byte>(set_flag);
 }
 
-auto chip8::shr(regs reg) -> void {
-  const bool set_flag = (get(reg) & 0x01) != 0;
-  get(reg) >>= 1;
+auto chip8::shr(regs dst, regs src) -> void {
+  const bool set_flag = (get(src) & 0x01) != 0;
+  get(dst) = get(src) >> 1;
   get(regs::VF) = as<byte>(set_flag);
 }
 
@@ -880,9 +894,9 @@ auto chip8::subn(regs dst, regs src) -> void {
   get(regs::VF) = as<byte>(set_flag);
 }
 
-auto chip8::shl(regs reg) -> void {
-  const bool set_flag = (get(reg) & 0x80) != 0x00;
-  get(reg) <<= 1;
+auto chip8::shl(regs dst, regs src) -> void {
+  const bool set_flag = (get(src) & 0x80) != 0x00;
+  get(dst) = get(src) << 1;
   get(regs::VF) = as<byte>(set_flag);
 }
 
@@ -912,15 +926,17 @@ auto chip8::drw(regs reg_x, regs reg_y, byte count) -> void {
   while (count-- != 0) {
     auto data = read(addr++);
     for (auto i = begin(data); i != end(data); i++) {
-      auto old_value = bool{*iter};
+      auto old_value = as<bool>(*iter);
       auto new_value = as<bool>(*i ^ *iter);
+      auto value = *iter;
+
+      iter++;
 
       if (old_value and not new_value) {
         get(regs::VF) = 0x01;
       }
 
-      *iter = new_value;
-      iter++;
+      value = new_value;
     }
   }
 }
@@ -945,34 +961,28 @@ auto chip8::bcd(regs reg) -> void {
 auto chip8::st_regs(regs reg) -> void {
   namespace views = std::views;
 
-  auto addr = m_i;
   for (auto idx : views::iota(0, as<int>(reg) + 1)) {
-    write(addr++, get(as<regs>(idx)));
+    write(m_i++, get(as<regs>(idx)));
   }
 }
 
 auto chip8::ld_regs(regs reg) -> void {
   namespace views = std::ranges::views;
 
-  auto addr = m_i;
   for (auto idx : views::iota(0, as<int>(reg) + 1)) {
-    get(as<regs>(idx)) = read(addr++);
+    get(as<regs>(idx)) = read(m_i++);
   }
 }
 
 auto chip8::skp(regs reg) -> void {
-  if (auto key = m_keyboard.key(); key) {
-    if (std::to_underlying(reg) == std::to_underlying(*key)) {
-      m_pc += 2;
-    }
+  if (m_keyboard.is_pressed(as<keys>(get(reg)))) {
+    m_pc += 2;
   }
 }
 
 auto chip8::sknp(regs reg) -> void {
-  if (auto key = m_keyboard.key(); key) {
-    if (std::to_underlying(reg) != std::to_underlying(*key)) {
-      m_pc += 2;
-    }
+  if (not m_keyboard.is_pressed(as<keys>(get(reg)))) {
+    m_pc += 2;
   }
 }
 
@@ -981,7 +991,11 @@ auto chip8::ld_dt(regs reg) -> void { get(reg) = m_dt; }
 auto chip8::st_dt(regs reg) -> void { m_dt = get(reg); }
 
 auto chip8::ld_key(regs reg) -> void {
-  for (auto key = m_keyboard.key(); key;) {
+  while (auto key = m_keyboard.key()) {
+    if (check_close()) {
+      return;
+    }
+
     get(reg) = as<byte>(*key);
   }
 }

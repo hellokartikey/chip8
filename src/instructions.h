@@ -120,7 +120,7 @@ constexpr auto LD_KEY(regs reg) -> word {
   return 0xf00a | (as<word>(reg) << 8);
 }
 
-constexpr auto LD_DT(regs reg) -> word { return 0x015 | (as<word>(reg) << 8); }
+constexpr auto LD_DT(regs reg) -> word { return 0xf015 | (as<word>(reg) << 8); }
 
 constexpr auto LD_ST(regs reg) -> word { return 0xf018 | (as<word>(reg) << 8); }
 

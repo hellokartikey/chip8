@@ -258,7 +258,6 @@ TEST(Opcode, RND) {
   EXPECT_EQ(op::RND(regs::VF, 0xab), 0xcfab);
 }
 
-// TODO - Add tests from DRW onwards
 TEST(Opcode, DRW) {
   EXPECT_EQ(op::DRW(regs::VF, regs::V0, 0x4), 0xdf04);
   EXPECT_EQ(op::DRW(regs::VA, regs::VB, 0x7), 0xdab7);
@@ -280,4 +279,67 @@ TEST(Opcode, SKNP) {
   EXPECT_EQ(op::SKNP(regs::VD), 0xeda1);
   EXPECT_EQ(op::SKNP(regs::V0), 0xe0a1);
   EXPECT_EQ(op::SKNP(regs::V2), 0xe2a1);
+}
+
+TEST(Opcode, LDfromDT) {
+  EXPECT_EQ(op::LD_VX_DT(regs::V5), 0xf507);
+  EXPECT_EQ(op::LD_VX_DT(regs::VA), 0xfa07);
+  EXPECT_EQ(op::LD_VX_DT(regs::V0), 0xf007);
+  EXPECT_EQ(op::LD_VX_DT(regs::V7), 0xf707);
+}
+
+TEST(Opcode, LDkey) {
+  EXPECT_EQ(op::LD_KEY(regs::V5), 0xf50a);
+  EXPECT_EQ(op::LD_KEY(regs::VA), 0xfa0a);
+  EXPECT_EQ(op::LD_KEY(regs::V0), 0xf00a);
+  EXPECT_EQ(op::LD_KEY(regs::V7), 0xf70a);
+}
+
+TEST(Opcode, LDtoDT) {
+  EXPECT_EQ(op::LD_DT(regs::V5), 0xf515);
+  EXPECT_EQ(op::LD_DT(regs::VA), 0xfa15);
+  EXPECT_EQ(op::LD_DT(regs::V0), 0xf015);
+  EXPECT_EQ(op::LD_DT(regs::V7), 0xf715);
+}
+
+TEST(Opcode, LDtoST) {
+  EXPECT_EQ(op::LD_ST(regs::V5), 0xf518);
+  EXPECT_EQ(op::LD_ST(regs::VA), 0xfa18);
+  EXPECT_EQ(op::LD_ST(regs::V0), 0xf018);
+  EXPECT_EQ(op::LD_ST(regs::V7), 0xf718);
+}
+
+TEST(Opcode, ADDi) {
+  EXPECT_EQ(op::ADD_I(regs::V5), 0xf51e);
+  EXPECT_EQ(op::ADD_I(regs::VA), 0xfa1e);
+  EXPECT_EQ(op::ADD_I(regs::V0), 0xf01e);
+  EXPECT_EQ(op::ADD_I(regs::V7), 0xf71e);
+}
+
+TEST(Opcode, LDfont) {
+  EXPECT_EQ(op::LD_F(regs::V5), 0xf529);
+  EXPECT_EQ(op::LD_F(regs::VA), 0xfa29);
+  EXPECT_EQ(op::LD_F(regs::V0), 0xf029);
+  EXPECT_EQ(op::LD_F(regs::V7), 0xf729);
+}
+
+TEST(Opcode, LDbcd) {
+  EXPECT_EQ(op::LD_B(regs::V5), 0xf533);
+  EXPECT_EQ(op::LD_B(regs::VA), 0xfa33);
+  EXPECT_EQ(op::LD_B(regs::V0), 0xf033);
+  EXPECT_EQ(op::LD_B(regs::V7), 0xf733);
+}
+
+TEST(Opcode, LDtoI) {
+  EXPECT_EQ(op::LD_I(regs::V5), 0xf555);
+  EXPECT_EQ(op::LD_I(regs::VA), 0xfa55);
+  EXPECT_EQ(op::LD_I(regs::V0), 0xf055);
+  EXPECT_EQ(op::LD_I(regs::V7), 0xf755);
+}
+
+TEST(Opcode, LDfromI) {
+  EXPECT_EQ(op::LD_VX_I(regs::V5), 0xf565);
+  EXPECT_EQ(op::LD_VX_I(regs::VA), 0xfa65);
+  EXPECT_EQ(op::LD_VX_I(regs::V0), 0xf065);
+  EXPECT_EQ(op::LD_VX_I(regs::V7), 0xf765);
 }

@@ -587,13 +587,6 @@ auto chip8::debug_set_regs(std::stringstream& cmd) -> void {
   auto reg_str = std::string{};
   cmd >> reg_str;
 
-  if (not magic_enum::enum_contains<regs>(reg_str)) {
-    fmt::print(std::cerr, "Invalid register\n");
-    return;
-  }
-
-  auto reg = as<regs>(reg_str);
-
   if (cmd.eof()) {
     fmt::print(std::cerr, "Invalid syntax...\n");
     return;
@@ -603,25 +596,20 @@ auto chip8::debug_set_regs(std::stringstream& cmd) -> void {
 
   cmd >> std::hex >> addr;
 
-  switch (reg) {
-    using enum regs;
-    case PC:
-      m_pc = address(addr);
-      return;
-    case R:
-      m_r = addr;
-      return;
-    case I:
-      m_i = address(addr);
-      return;
-    case DT:
-      m_dt = addr;
-      return;
-    case ST:
-      m_st = addr;
-      return;
-    default:
-      get(reg) = addr;
+  if (magic_enum::enum_contains<regs>(reg_str)) {
+    get(as<regs>(reg_str)) = addr;
+  } else if (reg_str == "PC") {
+    m_pc = address(addr);
+  } else if (reg_str == "I") {
+    m_i = address(addr);
+  } else if (reg_str == "R") {
+    m_r = addr;
+  } else if (reg_str == "DT") {
+    m_dt = addr;
+  } else if (reg_str == "ST") {
+    m_st = addr;
+  } else {
+    fmt::print(std::cerr, "Invalid register\n");
   }
 }
 

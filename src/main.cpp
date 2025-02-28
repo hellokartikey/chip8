@@ -7,7 +7,7 @@
 auto main(int argc, char* argv[]) -> int {
   auto args = cli_args(argc, argv);
 
-  fmt::print("chip8 emulator by hellokartikey!\n");
+  fmt::println("chip8 emulator by hellokartikey!");
 
   if (not args.is_valid()) {
     fmt::print(stderr, "Invalid usage.\n");

@@ -498,7 +498,6 @@ auto chip8::update_peripherals() -> void {
 }
 
 auto chip8::load_rom(const std::filesystem::path& file) -> void {
-  // TODO - Use a better way to handle without <fstream>
   if (not std::filesystem::is_regular_file(file)) {
     fmt::print(stderr, "Invalid rom file path\n");
     return;
@@ -507,10 +506,10 @@ auto chip8::load_rom(const std::filesystem::path& file) -> void {
   std::ifstream rom{file, std::ios::binary | std::ios::ate};
 
   auto end = rom.tellg();
-  auto rom_data = std::vector<byte>(end);
+  auto rom_data = std::vector<char>(end);
 
   rom.seekg(std::ios::beg);
-  rom.read(reinterpret_cast<char*>(rom_data.data()), end);
+  rom.read(rom_data.data(), end);
 
   std::ranges::copy(rom_data, std::next(m_memory.begin(), 0x200));
 }

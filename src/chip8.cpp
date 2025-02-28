@@ -2,7 +2,6 @@
 
 #include <fmt/base.h>
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <raylib.h>
 
 #include <algorithm>
@@ -568,7 +567,7 @@ auto chip8::debug_shell() -> void {
     } else if (sub_command == "press") {
       debug_press(cmd);
     } else {
-      fmt::print(std::cerr, "Invalid command...\n");
+      fmt::print(stderr, "Invalid command...\n");
     }
 
     m_screen.draw_screen();
@@ -579,7 +578,7 @@ auto chip8::debug_shell() -> void {
 
 auto chip8::debug_set_regs(std::stringstream& cmd) -> void {
   if (cmd.eof()) {
-    fmt::print(std::cerr, "Invalid syntax...\n");
+    fmt::print(stderr, "Invalid syntax...\n");
     return;
   }
 
@@ -587,7 +586,7 @@ auto chip8::debug_set_regs(std::stringstream& cmd) -> void {
   cmd >> reg_str;
 
   if (cmd.eof()) {
-    fmt::print(std::cerr, "Invalid syntax...\n");
+    fmt::print(stderr, "Invalid syntax...\n");
     return;
   }
 
@@ -608,7 +607,7 @@ auto chip8::debug_set_regs(std::stringstream& cmd) -> void {
   } else if (reg_str == "ST") {
     m_st = addr;
   } else {
-    fmt::print(std::cerr, "Invalid register\n");
+    fmt::print(stderr, "Invalid register\n");
   }
 }
 
@@ -808,7 +807,7 @@ auto chip8::debug_press(std::stringstream& cmd) -> void {
 }
 
 auto chip8::sys(word /*addr*/) -> void {
-  fmt::print(std::cerr, "SYS addr not implemented by this emulator\n");
+  fmt::print(stderr, "SYS addr not implemented by this emulator\n");
 }
 
 auto chip8::invalid(word opcode) -> void {

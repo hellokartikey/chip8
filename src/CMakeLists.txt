@@ -14,7 +14,6 @@ PRIVATE
   parser.cpp
   screen.cpp
   keyboard.cpp
-  cli.cpp
 INTERFACE
   common.h
   chip8.h
@@ -24,7 +23,6 @@ INTERFACE
   screen.h
   bit.h
   keyboard.h
-  cli.h
   helpers.h
   timer.h
 )
@@ -40,6 +38,7 @@ PRIVATE
 target_link_libraries(
   chip8
   fmt::fmt
+  cxxopts::cxxopts
   chip8++
 )
 

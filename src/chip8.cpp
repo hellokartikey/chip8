@@ -713,8 +713,8 @@ auto chip8::debug_dasm(std::stringstream& cmd) -> void {
     end = (begin + 0x0010_w);
   }
 
-  begin &= 0x0ffe;
-  end &= 0x0ffe;
+  begin = address(begin);
+  end = address(end);
 
   for (auto addr = begin; addr < end; addr += 2) {
     print_opcode(addr);

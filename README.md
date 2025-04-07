@@ -2,6 +2,8 @@
 
 A simple CHIP-8 emulator written in C++
 
+![Main Window](images/screenshot.png)
+
 ## Dependencies
 All library dependencies are downloaded and linked statically using CMake.
 
